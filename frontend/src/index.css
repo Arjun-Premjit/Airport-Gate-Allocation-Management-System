@@ -1,0 +1,180 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* LGM Aviation Extracted Tokens */
+  --color-1: #000000;
+  --color-2: #0D98D1;
+  --color-3: #F5F5F7;
+  --color-4: #FFFFFF;
+
+  --color-primary: #0D98D1;
+  --color-primary-hover: #0B84B7;
+
+  /* Spacing Tokens */
+  --space-1: 6px;
+  --space-2: 15px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 47px;
+  --space-6: 64px;
+
+  --aviation-navy: #071521;
+  --aviation-dark: #0D2233;
+  --aviation-blue: #0D98D1;
+  --aviation-cyan: #38bdf8;
+  --aviation-teal: #10b981;
+  --aviation-amber: #f59e0b;
+  --aviation-red: #ef4444;
+  --aviation-bg: #F5F5F7;
+  --aviation-card: #FFFFFF;
+  --aviation-text: #000000;
+  --aviation-muted: #64748b;
+  --aviation-border: rgba(0, 0, 0, 0.08);
+
+  /* Semantic Aliases */
+  --paper: #F5F5F7;
+  --paper-dark: #E2E8F0;
+  --paper-contrast: #FFFFFF;
+  --ink: #000000;
+  --ink-soft: #1e293b;
+  --stone: #64748b;
+  --hairline: rgba(0, 0, 0, 0.08);
+  --hairline-dark: rgba(0, 0, 0, 0.15);
+  --apron: #0D98D1;
+  --status-available: #059669;
+  --status-reserved: #d97706;
+  --status-occupied: #2563eb;
+  --status-maintenance: #dc2626;
+  --status-closed: #64748b;
+
+  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  color: var(--color-1);
+  background-color: var(--color-3);
+
+  --text-h1: clamp(2.5rem, 5.5vw, 4.25rem);
+  --text-lead: clamp(1.1rem, 1.8vw, 1.5rem);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-3);
+  color: var(--color-1);
+  overflow-x: hidden;
+  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* LGM Exact Splitting Wave Animation */
+@keyframes lgmWave {
+  0% {
+    color: inherit;
+    transform: scale(1);
+  }
+  50% {
+    color: var(--color-primary);
+    transform: scale(1.05);
+  }
+  100% {
+    color: var(--color-primary);
+    transform: scale(1);
+  }
+}
+
+.animate-lgm-wave {
+  display: inline-block;
+  animation: lgmWave 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+}
+
+/* LGM Drift Clouds Animation */
+@keyframes cloudsLoop {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.clouds-animate-60 {
+  display: flex;
+  width: 200%;
+  animation: cloudsLoop 60s linear infinite;
+}
+
+.clouds-animate-30 {
+  display: flex;
+  width: 200%;
+  animation: cloudsLoop 30s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-lgm-wave,
+  .clouds-animate-60,
+  .clouds-animate-30,
+  .animate-marquee {
+    animation: none;
+  }
+}
+
+/* LGM Logo Strip Infinite Marquee */
+@keyframes marqueeScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 35s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+
+/* Tabular figures for operational data */
+.tabular-nums,
+table,
+.font-tabular,
+time,
+input[type="time"],
+input[type="date"],
+input[type="datetime-local"] {
+  font-variant-numeric: tabular-nums;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* Headings scale and display */
+.font-display {
+  font-family: 'Host Grotesk', 'DM Sans', sans-serif;
+}
+
+/* Refined corporate aviation scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--aviation-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--aviation-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--aviation-muted);
+}
+
+/* Focus state rule */
+:focus-visible {
+  outline: 2px solid var(--aviation-blue);
+  outline-offset: 1px;
+}

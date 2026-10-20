@@ -1,0 +1,27 @@
+{
+  "safety-gate": {
+    "enabled": true,
+    "PreToolUse": [
+      {
+        "matcher": "run_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -Command \"$json = [Console]::In.ReadToEnd() | ConvertFrom-Json; $cmd = $json.toolCall.args.CommandLine; if ($cmd -match 'git push.*--force|rm -rf /|drop database|format [a-zA-Z]:') { Write-Output '{\\\"decision\\\":\\\"deny\\\",\\\"reason\\\":\\\"Destructive command blocked by safety-gate hook.\\\"}' } else { Write-Output '{\\\"decision\\\":\\\"allow\\\"}' }\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  },
+  "stop-verifier": {
+    "enabled": true,
+    "Stop": [
+      {
+        "type": "command",
+        "command": "powershell -NoProfile -Command \"$json = [Console]::In.ReadToEnd() | ConvertFrom-Json; if (Test-Path 'docs/current-task.md') { Write-Output '{\\\"decision\\\":\\\"stop\\\"}' } else { Write-Output '{\\\"decision\\\":\\\"continue\\\",\\\"reason\\\":\\\"Mandatory docs/current-task.md file is missing. Please create it before stopping.\\\"}' }\"",
+        "timeout": 5
+      }
+    ]
+  }
+}
