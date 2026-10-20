@@ -38,7 +38,7 @@ def list_maintenance(
     records = query.order_by(MaintenanceRecord.Maintenance_Date.desc(), MaintenanceRecord.Record_Number.desc()).all()
     return [
         MaintenanceResponse(
-            gate_id=r.Gate_ID,
+            gate_id=str(r.Gate_ID),
             record_number=r.Record_Number,
             terminal_name=r.gate.terminal.Terminal_Name if r.gate and r.gate.terminal else "",
             maintenance_date=r.Maintenance_Date,

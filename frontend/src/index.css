@@ -67,8 +67,8 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* LGM Exact Splitting Wave Animation */
-@keyframes lgmWave {
+/* AGAMS Splitting Wave Animation */
+@keyframes agamsWave {
   0% {
     color: inherit;
     transform: scale(1);
@@ -83,9 +83,10 @@ body {
   }
 }
 
+.animate-agams-wave,
 .animate-lgm-wave {
   display: inline-block;
-  animation: lgmWave 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+  animation: agamsWave 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
 }
 
 /* LGM Drift Clouds Animation */

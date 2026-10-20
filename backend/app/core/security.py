@@ -1,33 +1,60 @@
+
 from datetime import datetime, timedelta
 from typing import Optional, Union, Any
+
 from passlib.context import CryptContext
 from jose import jwt
+
 from backend.app.core.config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto",
+)
+
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    # Also support fallback for plain match in local dev/demo accounts if bcrypt fails
-    if plain_password == "password123" and ("$2b$" in hashed_password or plain_password in hashed_password):
-        return True
+    """Verify a password against a securely stored bcrypt hash."""
+    if not plain_password or not hashed_password:
+        return False
+
+    # Never accept a hardcoded demo password or a plaintext password.
+    if not hashed_password.startswith(("$2a$", "$2b$", "$2y$")):
+        return False
+
     try:
         return pwd_context.verify(plain_password, hashed_password)
-    except Exception:
-        return plain_password == hashed_password
+    except (ValueError, TypeError):
+        return False
+
 
 def get_password_hash(password: str) -> str:
+    """Generate a bcrypt hash for a password."""
+    if not password:
+        raise ValueError("Password cannot be empty")
+
     return pwd_context.hash(password)
 
-def create_access_token(subject: Union[str, Any], role: str, expires_delta: Optional[timedelta] = None) -> str:
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    
+
+def create_access_token(
+    subject: Union[str, Any],
+    role: str,
+    expires_delta: Optional[timedelta] = None,
+) -> str:
+    expire = datetime.utcnow() + (
+        expires_delta
+        or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+
     to_encode = {
         "sub": str(subject),
         "role": role,
-        "exp": expire
+        "exp": expire,
     }
-    encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
-    return encoded_jwt
+
+    return jwt.encode(
+        to_encode,
+        settings.JWT_SECRET_KEY,
+        algorithm=settings.JWT_ALGORITHM,
+    )

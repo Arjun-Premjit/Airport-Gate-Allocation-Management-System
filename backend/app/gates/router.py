@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
@@ -36,8 +36,8 @@ class GateSummary(BaseModel):
     latest_maintenance: Optional[str] = None
 
 class GateDetail(GateSummary):
-    upcoming_allocations: List[dict] = []
-    maintenance_history: List[dict] = []
+    upcoming_allocations: List[dict] = Field(default_factory=list)
+    maintenance_history: List[dict] = Field(default_factory=list)
 
 @router.get("", response_model=List[GateSummary])
 def list_gates(
@@ -128,8 +128,8 @@ def get_available_gates(
             continue
 
         available.append(GateSummary(
-            gate_id=g.Gate_ID,
-            terminal_id=g.Terminal_ID,
+            gate_id=str(g.Gate_ID),
+            terminal_id=str(g.Terminal_ID),
             terminal_name=g.terminal.Terminal_Name if g.terminal else None,
             gate_type=g.Gate_Type,
             capacity=g.Capacity,
@@ -159,16 +159,16 @@ def get_gate_detail(gate_id: str, db: Session = Depends(get_db)):
     ).order_by(MaintenanceRecord.Record_Number.desc()).all()
 
     return GateDetail(
-        gate_id=g.Gate_ID,
-        terminal_id=g.Terminal_ID,
+        gate_id=str(g.Gate_ID),
+        terminal_id=str(g.Terminal_ID),
         terminal_name=g.terminal.Terminal_Name if g.terminal else None,
         gate_type=g.Gate_Type,
         capacity=g.Capacity,
         status=g.Status,
         upcoming_allocations=[
             {
-                "gate_id": a.Gate_ID,
-                "flight_id": a.Flight_ID,
+                "gate_id": str(a.Gate_ID),
+                "flight_id": str(a.Flight_ID),
                 "allocation_number": a.Allocation_Number,
                 "composite_key": f"{a.Gate_ID}_{a.Flight_ID}_{a.Allocation_Number}",
                 "airline": a.flight.airline.Airline_Name if a.flight and a.flight.airline else None,
@@ -180,7 +180,7 @@ def get_gate_detail(gate_id: str, db: Session = Depends(get_db)):
         ],
         maintenance_history=[
             {
-                "gate_id": m.Gate_ID,
+                "gate_id": str(m.Gate_ID),
                 "record_number": m.Record_Number,
                 "maintenance_date": m.Maintenance_Date.isoformat(),
                 "description": m.Description,
@@ -207,8 +207,8 @@ def create_gate(
         raise HTTPException(status_code=409, detail=f"Gate '{payload.gate_id}' already exists.")
 
     new_gate = Gate(
-        Gate_ID=payload.gate_id,
-        Terminal_ID=payload.terminal_id,
+        Gate_ID=str(payload.gate_id),
+        Terminal_ID=str(payload.terminal_id),
         Gate_Type=payload.gate_type,
         Capacity=payload.capacity,
         Status=payload.status
@@ -218,8 +218,8 @@ def create_gate(
     db.refresh(new_gate)
 
     return GateSummary(
-        gate_id=new_gate.Gate_ID,
-        terminal_id=new_gate.Terminal_ID,
+        gate_id=str(new_gate.Gate_ID),
+        terminal_id=str(new_gate.Terminal_ID),
         terminal_name=terminal.Terminal_Name,
         gate_type=new_gate.Gate_Type,
         capacity=new_gate.Capacity,
@@ -254,8 +254,8 @@ def update_gate(
     db.refresh(gate)
 
     return GateSummary(
-        gate_id=gate.Gate_ID,
-        terminal_id=gate.Terminal_ID,
+        gate_id=str(gate.Gate_ID),
+        terminal_id=str(gate.Terminal_ID),
         terminal_name=gate.terminal.Terminal_Name if gate.terminal else None,
         gate_type=gate.Gate_Type,
         capacity=gate.Capacity,

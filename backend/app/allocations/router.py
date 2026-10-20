@@ -114,8 +114,8 @@ def get_timeline(
 
         allocs = alloc_query.all()
         timeline.append(TimelineGate(
-            gate_id=g.Gate_ID,
-            terminal_id=g.Terminal_ID,
+            gate_id=str(g.Gate_ID),
+            terminal_id=str(g.Terminal_ID),
             terminal_name=g.terminal.Terminal_Name if g.terminal else "Terminal",
             status=g.Status,
             allocations=[

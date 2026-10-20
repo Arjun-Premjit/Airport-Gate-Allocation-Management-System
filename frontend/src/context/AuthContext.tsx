@@ -20,35 +20,71 @@ const defaultUser: User = {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(defaultUser);
-  const [token, setToken] = useState<string | null>(localStorage.getItem('agams_token') || 'session-active');
-  const [isLoading, setIsLoading] = useState(false);
+
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem('agams_token')
+  );
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // If token exists, optionally sync profile, but default user ensures immediate full access
+    let cancelled = false;
+
     const fetchUser = async () => {
       const storedToken = localStorage.getItem('agams_token');
-      if (!storedToken) return;
+
+      if (!storedToken) {
+        if (!cancelled) {
+          setUser(null);
+          setIsLoading(false);
+        }
+        return;
+      }
+
       try {
         const res = await api.get('/auth/me');
-        if (res.data) setUser(res.data);
-      } catch (err) {
-        // Fallback gracefully to default operator
+
+        if (!cancelled) {
+          setUser(res.data);
+        }
+      } catch {
+        localStorage.removeItem('agams_token');
+        localStorage.removeItem('agams_user');
+
+        if (!cancelled) {
+          setToken(null);
+          setUser(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
       }
     };
-    fetchUser();
+
+    void fetchUser();
+
+    return () => {
+      cancelled = true;
+    };
   }, [token]);
 
   const login = async (email: string, password: string) => {
     const res = await api.post('/auth/login', { email, password });
     const { access_token, user_id, name, role } = res.data;
+
     localStorage.setItem('agams_token', access_token);
     setToken(access_token);
-    setUser({ user_id, name, email, role });
+    setUser({
+      user_id,
+      name,
+      email: res.data.email || email,
+      role,
+    });
   };
-
   const logout = () => {
     localStorage.removeItem('agams_token');
+    localStorage.removeItem('agams_user');
     setToken(null);
     setUser(null);
   };

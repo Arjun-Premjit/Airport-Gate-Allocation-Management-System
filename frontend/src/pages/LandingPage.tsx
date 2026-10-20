@@ -334,25 +334,40 @@ export const LandingPage: React.FC = () => {
       className="bg-[#F5F5F7] text-[#000000] min-h-screen font-sans selection:bg-[#0D98D1] selection:text-white"
     >
       {/* ─────────────────────────────────────────────────────────────
-          SECTION A: STICKY LGM HEADER & NAVIGATION
+          SECTION A: STICKY AGAMS HEADER & NAVIGATION
       ───────────────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-50 flex h-[79px] justify-between border-b border-black/10 bg-white pl-[clamp(2rem,4.5vw,4rem)] pr-5 md:pr-12 items-center">
-        {/* LGM & AGAMS Brandmark */}
+        {/* AGAMS Brandmark */}
         <div className="flex items-center">
           <a
             href="/"
             className="inline-flex items-center gap-3.5 group text-[#000000] no-underline"
           >
-            <img
-              src="/lgmlogo-01.svg"
-              alt="LGM Aviation"
-              className="h-[79px] w-[105px] object-contain py-3"
-            />
-            <div className="hidden sm:flex flex-col border-l border-black/10 pl-3.5 leading-none">
-              <span className="text-base font-bold tracking-tight text-slate-900">
+            <div className="h-10 w-10 rounded-lg bg-[#0A2540] flex items-center justify-center text-white shadow-sm border border-slate-700/40 shrink-0">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                className="w-5 h-5 text-[#0D98D1]"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 2v20M2 12h20" stroke="#0D98D1" strokeWidth="2.2" />
+                <circle cx="12" cy="12" r="3.5" fill="#0D98D1" />
+                <path
+                  d="M5 5l14 14M19 5L5 19"
+                  stroke="#0D98D1"
+                  strokeWidth="1.2"
+                  strokeOpacity="0.4"
+                />
+              </svg>
+            </div>
+            <div className="flex flex-col border-l border-black/10 pl-3.5 leading-none">
+              <span className="text-xl font-bold tracking-tight text-slate-900 font-display">
                 AGAMS
               </span>
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mt-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#0D98D1] font-mono mt-1">
                 Gate Operations
               </span>
             </div>
@@ -616,23 +631,23 @@ export const LandingPage: React.FC = () => {
           </video>
         </div>
 
-        {/* STAGE 1: INTRO CONTENT ("Materials Management Simplified") */}
+        {/* STAGE 1: INTRO CONTENT ("Gate Allocation Simplified") */}
         <div className="intro-content absolute top-0 left-0 z-[5] h-full max-w-2xl px-6 pt-[8vmin] sm:px-12 md:w-[58%] xl:px-16">
           <div className="relative w-full md:top-1/3 md:left-0 md:-translate-y-1/2 space-y-6">
             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-700">
               <span className="h-px w-8 bg-[#0D98D1]" />
-              <span>Airport Gate Allocation & Materials</span>
+              <span>Deterministic Airport Ramp &amp; Gate Engine</span>
             </div>
 
             <h1 className="text-[clamp(2.5rem,5.5vw,4.5rem)] font-light leading-[1] tracking-[-2px] text-pretty text-black font-display">
-              Materials Management{' '}
-              <span className="animate-lgm-wave text-[#0D98D1] font-semibold">
+              Gate Allocation{' '}
+              <span className="animate-agams-wave text-[#0D98D1] font-semibold">
                 Simplified
               </span>
             </h1>
 
             <p className="max-w-xl text-lg sm:text-xl font-medium leading-relaxed text-slate-700">
-              Trusted by airlines, lessors &amp; aftermarket services providers worldwide.
+              Real-time apron telemetry, mechanical conflict avoidance, and deterministic gate assignment for global aviation hubs.
             </p>
 
             <div className="pt-2 flex flex-wrap gap-4">
@@ -938,7 +953,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          SECTION E: GLOBAL REACH VIA THREE DISTINCT DIVISIONS
+          SECTION E: GLOBAL HUB MANAGEMENT VIA THREE CORE PILLARS
       ───────────────────────────────────────────────────────────── */}
       <section id="divisions" className="py-24 px-6 sm:px-12 md:px-16 max-w-7xl mx-auto">
         {/* Section Header */}
@@ -947,31 +962,31 @@ export const LandingPage: React.FC = () => {
             <svg viewBox="0 0 11 11" fill="currentColor" className="w-3.5 h-3.5 text-[#0D98D1]">
               <path d="M.715.5h10v10H5.488V5.753H.715V.5Z" />
             </svg>
-            <span>Delivering Certainty</span>
+            <span>Delivering Operational Certainty</span>
           </div>
 
           <h2 className="text-4xl sm:text-5xl font-light text-slate-900 tracking-[-2px] leading-[1.08] font-display">
-            Global Reach Via{' '}
-            <span className="animate-lgm-wave text-[#0D98D1] font-semibold">
+            Global Hub Management Via{' '}
+            <span className="animate-agams-wave text-[#0D98D1] font-semibold">
               Three
             </span>{' '}
-            Distinct Divisions
+            Core Architectural Pillars
           </h2>
         </div>
 
-        {/* Three Distinct Division Cards */}
+        {/* Three Distinct Architectural Pillar Cards */}
         <div data-scroll-stagger className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Division 1: LGM Aviation (Cyan #0D98D1) */}
+          {/* Pillar 1: Stand Allocation Engine (Cyan #0D98D1) */}
           <div
             className="group relative flex flex-col justify-between overflow-hidden rounded-none border border-black/10 bg-white p-8 sm:p-10 transition-all hover:shadow-xl"
             style={{ '--color-primary': '#0D98D1' } as React.CSSProperties}
           >
             <div className="space-y-4">
               <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                LGM Aviation
+                Stand Allocation Engine
               </h3>
               <p className="text-base text-slate-600 font-medium leading-relaxed">
-                UK stockist of commercial aircraft spares for all aircraft types. 24/7 customer support team covering EMEA operations and stand dispatch.
+                Automated wingspan suitability enforcement, wide-body/narrow-body stand matching, and zero-overlap temporal conflict resolution.
               </p>
               <div className="pt-2">
                 <a
@@ -982,22 +997,19 @@ export const LandingPage: React.FC = () => {
                   }}
                   className="inline-flex items-center gap-2 text-base font-bold text-[#0D98D1] underline decoration-[#0D98D1] decoration-2 underline-offset-4 group-hover:text-[#0B84B7] transition-colors"
                 >
-                  <span>Learn More</span>
+                  <span>Explore Allocations</span>
                   <ArrowRight className="w-4 h-4" />
                 </a>
               </div>
             </div>
 
             <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
-              <div className="w-28">
-                <img
-                  src="/lgm-logo-sub.webp"
-                  alt="LGM Aviation Spares"
-                  className="h-10 w-auto object-contain"
-                />
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded bg-[#0D98D1]/10 text-[#0D98D1] font-mono text-xs font-bold uppercase tracking-wider">
+                <Plane className="w-3.5 h-3.5" />
+                <span>STAND // ENGINE</span>
               </div>
 
-              {/* Exact LGM 3D Wireframe Polygon SVG */}
+              {/* Exact 3D Wireframe Polygon SVG */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 333 376"
@@ -1017,17 +1029,17 @@ export const LandingPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Division 2: LGM Aviation Americas (Crimson #913B31) */}
+          {/* Pillar 2: Apron Telemetry (Crimson #913B31) */}
           <div
             className="group relative flex flex-col justify-between overflow-hidden rounded-none border border-black/10 bg-white p-8 sm:p-10 transition-all hover:shadow-xl"
             style={{ '--color-primary': '#913B31' } as React.CSSProperties}
           >
             <div className="space-y-4">
               <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                LGM Aviation Americas
+                Apron Telemetry
               </h3>
               <p className="text-base text-slate-600 font-medium leading-relaxed">
-                USA stockist of commercial aircraft spares for all aircraft types. 24/7 customer support team covering the Americas, ramp turnarounds &amp; stand maintenance.
+                Real-time jet bridge status, active maintenance isolation windows, and tarmac resurfacing locks across all hub terminals.
               </p>
               <div className="pt-2">
                 <a
@@ -1038,22 +1050,19 @@ export const LandingPage: React.FC = () => {
                   }}
                   className="inline-flex items-center gap-2 text-base font-bold text-[#913B31] underline decoration-[#913B31] decoration-2 underline-offset-4 group-hover:text-[#7A3129] transition-colors"
                 >
-                  <span>Learn More</span>
+                  <span>Inspect Apron</span>
                   <ArrowRight className="w-4 h-4" />
                 </a>
               </div>
             </div>
 
             <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
-              <div className="w-28">
-                <img
-                  src="/lgm-logo-americas.webp"
-                  alt="LGM Aviation Americas"
-                  className="h-10 w-auto object-contain"
-                />
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded bg-[#913B31]/10 text-[#913B31] font-mono text-xs font-bold uppercase tracking-wider">
+                <SlidersHorizontal className="w-3.5 h-3.5" />
+                <span>APRON // TELEMETRY</span>
               </div>
 
-              {/* Exact LGM 3D Wireframe Polygon SVG */}
+              {/* Exact 3D Wireframe Polygon SVG */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 333 376"
@@ -1073,17 +1082,17 @@ export const LandingPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Division 3: LGM Aviation Capital (Gold #927438) */}
+          {/* Pillar 3: Dispatch Command (Gold #927438) */}
           <div
             className="group relative flex flex-col justify-between overflow-hidden rounded-none border border-black/10 bg-white p-8 sm:p-10 transition-all hover:shadow-xl"
             style={{ '--color-primary': '#927438' } as React.CSSProperties}
           >
             <div className="space-y-4">
               <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                LGM Aviation Capital
+                Dispatch Command
               </h3>
               <p className="text-base text-slate-600 font-medium leading-relaxed">
-                UAE-based entity focused on asset transactions. Including airframe &amp; engine packages, major assets for sale or teardown, and gate leasing programs.
+                Unified station control for Gate Managers, Flight Managers, and Station Heads. Automated live audit logs and turnaround tracking.
               </p>
               <div className="pt-2">
                 <a
@@ -1094,22 +1103,19 @@ export const LandingPage: React.FC = () => {
                   }}
                   className="inline-flex items-center gap-2 text-base font-bold text-[#927438] underline decoration-[#927438] decoration-2 underline-offset-4 group-hover:text-[#7A612D] transition-colors"
                 >
-                  <span>Learn More</span>
+                  <span>Launch Timeline</span>
                   <ArrowRight className="w-4 h-4" />
                 </a>
               </div>
             </div>
 
             <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
-              <div className="w-28">
-                <img
-                  src="/lgm-logo-capital.webp"
-                  alt="LGM Aviation Capital"
-                  className="h-10 w-auto object-contain"
-                />
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded bg-[#927438]/10 text-[#927438] font-mono text-xs font-bold uppercase tracking-wider">
+                <Clock className="w-3.5 h-3.5" />
+                <span>DISPATCH // CONTROL</span>
               </div>
 
-              {/* Exact LGM 3D Wireframe Polygon SVG */}
+              {/* Exact 3D Wireframe Polygon SVG */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 333 376"
@@ -1140,15 +1146,38 @@ export const LandingPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             {/* Col 1: Brand & Identity */}
             <div className="lg:col-span-5 space-y-4">
-              <a href="/" className="inline-block">
-                <img
-                  src="/lgmlogo-01.svg"
-                  alt="LGM Aviation"
-                  className="h-[79px] w-[105px] object-contain"
-                />
+              <a href="/" className="inline-flex items-center gap-3 group text-[#000000] no-underline">
+                <div className="h-10 w-10 rounded-lg bg-[#0A2540] flex items-center justify-center text-white shadow-sm border border-slate-700/40 shrink-0">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className="w-5 h-5 text-[#0D98D1]"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M12 2v20M2 12h20" stroke="#0D98D1" strokeWidth="2.2" />
+                    <circle cx="12" cy="12" r="3.5" fill="#0D98D1" />
+                    <path
+                      d="M5 5l14 14M19 5L5 19"
+                      stroke="#0D98D1"
+                      strokeWidth="1.2"
+                      strokeOpacity="0.4"
+                    />
+                  </svg>
+                </div>
+                <div className="flex flex-col border-l border-black/10 pl-3 leading-none">
+                  <span className="text-lg font-bold tracking-tight text-slate-900 font-display">
+                    AGAMS
+                  </span>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-[#0D98D1] font-mono mt-1">
+                    GATE OPERATIONS
+                  </span>
+                </div>
               </a>
               <p className="text-sm text-slate-600 leading-relaxed max-w-sm font-medium">
-                Airport Gate Allocation Management System &amp; LGM Aviation. Globally trusted, responsive, and agile aviation software providing deterministic gate allocation and ramp turnaround predictability.
+                Airport Gate Allocation Management System. Globally trusted, responsive, and agile aviation software providing deterministic gate allocation and ramp turnaround predictability.
               </p>
             </div>
 
@@ -1201,14 +1230,14 @@ export const LandingPage: React.FC = () => {
 
             {/* Col 3: Services & Infrastructure */}
             <div className="lg:col-span-2 space-y-4">
-              <p className="text-base font-bold text-slate-900">Services</p>
+              <p className="text-base font-bold text-slate-900">Operations</p>
               <ul className="space-y-3 text-sm font-semibold text-slate-600">
                 <li>
                   <button
-                    onClick={() => navigate('/terminals')}
+                    onClick={() => navigate('/allocations')}
                     className="hover:text-[#0D98D1] transition-colors"
                   >
-                    Part Sales
+                    Deterministic Matching
                   </button>
                 </li>
                 <li>
@@ -1216,27 +1245,25 @@ export const LandingPage: React.FC = () => {
                     onClick={() => navigate('/maintenance')}
                     className="hover:text-[#0D98D1] transition-colors"
                   >
-                    Repair Management
+                    Maintenance Isolation
                   </button>
                 </li>
                 <li>
                   <button
-                    onClick={() => navigate('/analytics')}
+                    onClick={() => navigate('/gates')}
                     className="hover:text-[#0D98D1] transition-colors"
                   >
-                    Materials &amp; Logistics
+                    Apron Telemetry
                   </button>
                 </li>
                 <li>
-                  <a
-                    href="https://lgmaviation.com"
-                    target="_blank"
-                    rel="noreferrer"
+                  <button
+                    onClick={() => navigate('/timeline')}
                     className="hover:text-[#0D98D1] transition-colors inline-flex items-center gap-1"
                   >
-                    <span>LGM Aviation Live</span>
+                    <span>24h Flight Timeline</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
@@ -1248,17 +1275,15 @@ export const LandingPage: React.FC = () => {
                 <li className="flex items-center gap-2.5">
                   <Mail className="w-4 h-4 text-[#0D98D1]" />
                   <a
-                    href="mailto:enquiries@lgmaviation.com"
+                    href="mailto:dispatch@agams.airport"
                     className="hover:text-[#0D98D1] transition-colors"
                   >
-                    enquiries@lgmaviation.com
+                    dispatch@agams.airport
                   </a>
                 </li>
                 <li className="flex items-center gap-2.5">
                   <Phone className="w-4 h-4 text-[#0D98D1]" />
-                  <a href="tel:01243200787" className="hover:text-[#0D98D1] transition-colors font-mono">
-                    01243 200787
-                  </a>
+                  <span className="font-mono text-slate-600">JFK Apron Control: Ex. 402</span>
                 </li>
                 <li className="flex items-center gap-2.5">
                   <Clock className="w-4 h-4 text-[#0D98D1]" />
@@ -1330,20 +1355,20 @@ export const LandingPage: React.FC = () => {
             {/* Footer Metadata with Divide-X hairlines */}
             <ul className="flex flex-wrap justify-center gap-y-3 divide-x divide-black/10 py-4 text-xs font-semibold text-slate-500 font-mono lg:justify-end">
               <li className="px-3">
-                <p>© 2026 LGM Aviation LTD</p>
+                <p>© 2026 AGAMS Systems</p>
               </li>
               <li className="px-3">
-                <p>Registered in England &amp; Wales: 10942487</p>
+                <p>JFK Station Control • Invariant Engine</p>
               </li>
               <li className="px-3">
-                <span className="text-slate-400">JFK Station Control</span>
+                <span className="text-slate-400">Deterministic Ramp Engine</span>
               </li>
               <li className="px-3">
                 <button
                   onClick={() => navigate('/dashboard')}
                   className="text-[#0D98D1] hover:underline"
                 >
-                  Console Sign In
+                  Console Dashboard
                 </button>
               </li>
             </ul>
