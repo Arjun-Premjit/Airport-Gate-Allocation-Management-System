@@ -159,13 +159,13 @@ export const LandingPage: React.FC = () => {
         { yPercent: 0, xPercent: 0, rotate: 0, scale: 1, duration: 2.2, ease: 'power2.out' }
       );
 
-      // 2. Hero Transition: Airplane Glides Down from High Altitude Flight into Descent
+      // 2. Hero Transition: Airplane Glides Down, Banks, and Transitions Completely Out of the Frame
       const heroTimeline = gsap.timeline({
-        defaults: { ease: 'power1.out' },
+        defaults: { ease: 'power1.inOut' },
         scrollTrigger: {
           trigger: heroSection,
           start: 'top top',
-          end: '+=130%',
+          end: '+=140%',
           scrub: 0.8,
           pin: true,
           anticipatePin: 1,
@@ -175,24 +175,25 @@ export const LandingPage: React.FC = () => {
       });
 
       heroTimeline
-        .to('.intro-content', { autoAlpha: 0, yPercent: -30, duration: 0.5 })
+        .to('.intro-content', { autoAlpha: 0, yPercent: -40, duration: 0.4 })
         .to(
           '.clouds-container',
-          { autoAlpha: 0.3, yPercent: -20, duration: 1.2 },
+          { autoAlpha: 0, yPercent: -35, duration: 0.8 },
           '<'
         )
         .fromTo(
           '.plane-element',
-          { yPercent: 0, xPercent: 0, rotate: 0, scale: 1 },
+          { yPercent: 0, xPercent: 0, rotate: 0, scale: 1, autoAlpha: 1 },
           {
-            yPercent: 45,
-            xPercent: 65,
-            rotate: 7,
-            scale: 1.2,
-            duration: 1.5,
-            ease: 'power1.inOut'
+            yPercent: 175,   // Moves completely down out of the frame
+            xPercent: 85,    // Swoops diagonally across
+            rotate: 16,      // Natural bank angle
+            scale: 2.35,     // Zooming large as it rushes past camera
+            autoAlpha: 0,    // Fully exits the frame boundary
+            duration: 1.2,
+            ease: 'power2.in'
           },
-          '<-0.2'
+          '<-0.1'
         );
 
       // 3. Gate Landing Section: Real-life Transition to Airplane Landed Inside Gate / Hangar Stand
@@ -204,62 +205,46 @@ export const LandingPage: React.FC = () => {
         const landingCta = gateLandingSection.querySelector<HTMLElement>('.gate-landing-cta');
         const telemetryChips = gateLandingSection.querySelectorAll<HTMLElement>('.telemetry-chip');
 
-        // Cinematic zoom-in as aircraft completes roll-in and comes to rest at stand
+        // Pinned full-viewport gate slide presentation
+        const gateSlideTimeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: gateLandingSection,
+            start: 'top top',
+            end: '+=120%',
+            pin: true,
+            scrub: 0.8,
+            anticipatePin: 1
+          }
+        });
+
+        // Cinematic zoom-in as aircraft settles into the gate stand
         if (landingImage) {
-          gsap.fromTo(
+          gateSlideTimeline.fromTo(
             landingImage,
-            { scale: 1.12, yPercent: -4 },
-            {
-              scale: 1.0,
-              yPercent: 0,
-              ease: 'power1.out',
-              scrollTrigger: {
-                trigger: gateLandingSection,
-                start: 'top bottom',
-                end: 'bottom top',
-                scrub: 0.8
-              }
-            }
+            { scale: 1.15, filter: 'brightness(0.92)' },
+            { scale: 1.0, filter: 'brightness(1.0)', duration: 1.0, ease: 'power2.out' },
+            0
           );
         }
 
-        // Elegant staggered entrance of the gate landing title & operational controls
+        // Staggered presentation of the gate landing title, badge & dispatch controls
         const elementsToReveal = [landingBadge, landingTitle, landingDesc, landingCta].filter(Boolean);
         if (elementsToReveal.length > 0) {
-          gsap.fromTo(
+          gateSlideTimeline.fromTo(
             elementsToReveal,
-            { autoAlpha: 0, y: 35 },
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.8,
-              stagger: 0.15,
-              ease: 'power2.out',
-              scrollTrigger: {
-                trigger: gateLandingSection,
-                start: 'top 75%',
-                once: true
-              }
-            }
+            { autoAlpha: 0, y: 40 },
+            { autoAlpha: 1, y: 0, stagger: 0.12, duration: 0.8, ease: 'power2.out' },
+            0.15
           );
         }
 
+        // Live telemetry chips pop in with active indicators
         if (telemetryChips.length > 0) {
-          gsap.fromTo(
+          gateSlideTimeline.fromTo(
             telemetryChips,
-            { autoAlpha: 0, scale: 0.9 },
-            {
-              autoAlpha: 1,
-              scale: 1,
-              duration: 0.6,
-              stagger: 0.12,
-              ease: 'back.out(1.5)',
-              scrollTrigger: {
-                trigger: gateLandingSection,
-                start: 'top 65%',
-                once: true
-              }
-            }
+            { autoAlpha: 0, scale: 0.85, y: 20 },
+            { autoAlpha: 1, scale: 1, y: 0, stagger: 0.1, duration: 0.6, ease: 'back.out(1.5)' },
+            0.45
           );
         }
       }
@@ -518,7 +503,7 @@ export const LandingPage: React.FC = () => {
       ───────────────────────────────────────────────────────────── */}
       <section
         ref={gateLandingRef}
-        className="relative isolate min-h-screen w-full overflow-hidden flex items-center bg-[#F5F5F7] border-t border-black/10"
+        className="relative isolate min-h-screen h-screen w-full overflow-hidden flex items-center bg-[#F5F5F7] border-t border-black/10"
       >
         {/* Full-width Gate / Hangar Stand Backdrop Plate */}
         <div className="absolute inset-0 z-0 overflow-hidden select-none pointer-events-none">
