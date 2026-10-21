@@ -5,11 +5,16 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
 
-from backend.app.core.database import get_db
-from backend.app.core.config import settings
-from backend.app.core.security import verify_password, create_access_token
-from backend.app.core.auth_identities import get_identity_by_email, get_identity_by_employee_id
-from backend.app.models.all_models import Employee
+
+from app.core.database import get_db
+from app.core.config import settings
+from app.core.security import verify_password, create_access_token
+from app.core.auth_identities import (
+    get_identity_by_email,
+    get_identity_by_employee_id,
+)
+from app.models.all_models import Employee
+
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
