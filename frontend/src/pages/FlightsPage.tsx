@@ -11,6 +11,7 @@ import { Tag } from '../components/ui/Tag';
 
 export const FlightsPage: React.FC = () => {
   const { user } = useAuth();
+  const userRole = user?.role || 'Airport Head';
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(true);
   const [airlineFilter, setAirlineFilter] = useState('');
@@ -22,8 +23,8 @@ export const FlightsPage: React.FC = () => {
   const [newFlightId, setNewFlightId] = useState('');
   const [newAirlineId, setNewAirlineId] = useState('DAL');
   const [newAircraftId, setNewAircraftId] = useState('AC-DAL-101');
-  const [newDeparture, setNewDeparture] = useState('2026-10-12T14:00');
-  const [newArrival, setNewArrival] = useState('2026-10-12T16:00');
+  const [newDeparture, setNewDeparture] = useState('2026-10-21T14:00');
+  const [newArrival, setNewArrival] = useState('2026-10-21T16:00');
   const [aircraftList, setAircraftList] = useState<any[]>([]);
 
   // Staff Assignment Modal
@@ -165,7 +166,7 @@ export const FlightsPage: React.FC = () => {
             <option value="UAE">Emirates (UAE)</option>
           </Select>
 
-          {(user?.role === 'Airport Head' || user?.role === 'Flight Manager') && (
+          {(userRole === 'Airport Head' || userRole === 'Flight Manager') && (
             <Button
               variant="apron"
               size="md"
@@ -355,7 +356,7 @@ export const FlightsPage: React.FC = () => {
                 <h3 className="text-[12px] uppercase tracking-[0.06em] font-medium text-stone">
                   Staff Assigned to Flight (M:N Staffing Bridge)
                 </h3>
-                {(user?.role === 'Airport Head' || user?.role === 'Flight Manager') && (
+                {(userRole === 'Airport Head' || userRole === 'Flight Manager') && (
                   <Button
                     variant="secondary"
                     size="sm"

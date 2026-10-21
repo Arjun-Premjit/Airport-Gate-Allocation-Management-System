@@ -11,6 +11,7 @@ import { Tag } from '../components/ui/Tag';
 
 export const MaintenancePage: React.FC = () => {
   const { user } = useAuth();
+  const userRole = user?.role || 'Airport Head';
   const [records, setRecords] = useState<MaintenanceRecord[]>([]);
   const [gates, setGates] = useState<Gate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,7 +19,7 @@ export const MaintenancePage: React.FC = () => {
   // Modal State
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedGateId, setSelectedGateId] = useState('');
-  const [maintenanceDate, setMaintenanceDate] = useState('2026-10-12T08:00');
+  const [maintenanceDate, setMaintenanceDate] = useState('2026-10-21T08:00');
   const [description, setDescription] = useState('');
   const [cost, setCost] = useState('15000');
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -85,7 +86,7 @@ export const MaintenancePage: React.FC = () => {
         subtitle="Explains gate unavailability and enforces mechanical exclusion of servicing stands from flight allocation."
         kicker="Infrastructure Servicing"
       >
-        {(user?.role === 'Airport Head' || user?.role === 'Gate Manager') && (
+        {(userRole === 'Airport Head' || userRole === 'Gate Manager') && (
           <Button
             variant="apron"
             size="md"
@@ -153,7 +154,7 @@ export const MaintenancePage: React.FC = () => {
                   <Tag status={m.gate_status} />
                 </TableCell>
                 <TableCell align="right">
-                  {m.gate_status === 'Maintenance' && (user?.role === 'Airport Head' || user?.role === 'Gate Manager') && (
+                  {m.gate_status === 'Maintenance' && (userRole === 'Airport Head' || userRole === 'Gate Manager') && (
                     <Button
                       variant="ghost"
                       size="sm"

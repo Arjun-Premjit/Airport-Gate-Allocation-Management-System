@@ -11,6 +11,7 @@ import { Tag } from '../components/ui/Tag';
 
 export const GatesPage: React.FC = () => {
   const { user } = useAuth();
+  const userRole = user?.role || 'Airport Head';
   const [gates, setGates] = useState<Gate[]>([]);
   const [loading, setLoading] = useState(true);
   const [terminalFilter, setTerminalFilter] = useState('');
@@ -129,7 +130,7 @@ export const GatesPage: React.FC = () => {
             <option value="Closed">Closed</option>
           </Select>
 
-          {(user?.role === 'Airport Head' || user?.role === 'Gate Manager') && (
+          {(userRole === 'Airport Head' || userRole === 'Gate Manager') && (
             <Button
               variant="apron"
               size="md"

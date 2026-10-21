@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Tag } from '../components/ui/Tag';
 
 export const DashboardLayout: React.FC = () => {
-  const { user } = useAuth();
+  const { user, switchRole } = useAuth();
 
   const userRole = user?.role || 'Airport Head';
 
@@ -98,8 +98,8 @@ export const DashboardLayout: React.FC = () => {
         {/* User Profile in Sidebar Footer */}
         <div className="p-4 border-t border-white/10 bg-aviation-dark/50">
           <div className="min-w-0">
-            <div className="text-[12px] font-medium text-white truncate">{user?.name}</div>
-            <div className="text-[11px] text-slate-400 font-tabular truncate">{user?.email}</div>
+            <div className="text-[12px] font-medium text-white truncate">{user?.name || 'Jonathan Vance'}</div>
+            <div className="text-[11px] text-slate-400 font-tabular truncate">{user?.email || 'head@agams.airport'}</div>
           </div>
         </div>
       </aside>
@@ -119,6 +119,18 @@ export const DashboardLayout: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 bg-aviation-bg px-3 py-1.5 rounded-[4px] border border-aviation-border text-[12px]">
+              <span className="text-aviation-muted font-medium">Role:</span>
+              <select
+                value={user?.role || 'Airport Head'}
+                onChange={(e) => switchRole(e.target.value as any)}
+                className="bg-transparent font-semibold text-aviation-navy border-none outline-hidden cursor-pointer"
+              >
+                <option value="Airport Head">Airport Head</option>
+                <option value="Gate Manager">Gate Manager</option>
+                <option value="Flight Manager">Flight Manager</option>
+              </select>
+            </div>
             <Tag variant="neutral">
               {user?.role || 'Airport Head'}
             </Tag>

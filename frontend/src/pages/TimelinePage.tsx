@@ -12,7 +12,7 @@ export const TimelinePage: React.FC = () => {
   const [gates, setGates] = useState<TimelineGate[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTerminal, setSelectedTerminal] = useState('');
-  const [dateFilter, setDateFilter] = useState('2026-10-12');
+  const [dateFilter, setDateFilter] = useState('2026-10-21');
 
   const fetchTimeline = async () => {
     setLoading(true);

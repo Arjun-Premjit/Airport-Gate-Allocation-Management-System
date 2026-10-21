@@ -67,7 +67,7 @@ export const DashboardPage: React.FC = () => {
         <Button
           variant="apron"
           size="md"
-          onClick={() => navigate('/allocations')}
+          onClick={() => navigate('/allocations?new=true')}
           icon={<Plus className="w-3.5 h-3.5" strokeWidth={1.5} />}
         >
           New Allocation

@@ -97,6 +97,10 @@ export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const rootRef = useRef<HTMLDivElement>(null);
   const heroSectionRef = useRef<HTMLElement>(null);
+  const gateLandingRef = useRef<HTMLElement>(null);
+
+  // Scroll state for transparent glassmorphic header adaptation
+  const [isScrolled, setIsScrolled] = useState(false);
 
   // Gate Slide Interactive State
   const [selectedGate, setSelectedGate] = useState<DemoGate>(initialGates[0]);
@@ -124,8 +128,17 @@ export const LandingPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    const handleWindowScroll = () => {
+      setIsScrolled(window.scrollY > 40);
+    };
+    window.addEventListener('scroll', handleWindowScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleWindowScroll);
+  }, []);
+
+  useEffect(() => {
     const root = rootRef.current;
     const heroSection = heroSectionRef.current;
+    const gateLandingSection = gateLandingRef.current;
     if (!root || !heroSection || isReducedMotion) return;
 
     // Smooth scroll provider using Lenis
@@ -142,18 +155,18 @@ export const LandingPage: React.FC = () => {
       // 1. Initial Page Load - Airplane Entry Swoop
       gsap.fromTo(
         '.plane-element',
-        { yPercent: 100, xPercent: -100, rotate: -10 },
-        { yPercent: 0, xPercent: 0, rotate: 0, duration: 2, ease: 'sine.out' }
+        { yPercent: 80, xPercent: -80, rotate: -8, scale: 0.9 },
+        { yPercent: 0, xPercent: 0, rotate: 0, scale: 1, duration: 2.2, ease: 'power2.out' }
       );
 
-      // 2. Hero Transition: Exit Intro & Airplane Climb
+      // 2. Hero Transition: Airplane Glides Down from High Altitude Flight into Descent
       const heroTimeline = gsap.timeline({
         defaults: { ease: 'power1.out' },
         scrollTrigger: {
           trigger: heroSection,
-          start: 'top-=79px top',
-          end: '+=120%',
-          scrub: 0.75,
+          start: 'top top',
+          end: '+=130%',
+          scrub: 0.8,
           pin: true,
           anticipatePin: 1,
           refreshPriority: 1,
@@ -162,66 +175,96 @@ export const LandingPage: React.FC = () => {
       });
 
       heroTimeline
-        .to('.intro-content', { autoAlpha: 0, yPercent: -20, duration: 0.5 })
+        .to('.intro-content', { autoAlpha: 0, yPercent: -30, duration: 0.5 })
+        .to(
+          '.clouds-container',
+          { autoAlpha: 0.3, yPercent: -20, duration: 1.2 },
+          '<'
+        )
         .fromTo(
           '.plane-element',
-          { yPercent: 0, xPercent: 0, rotate: 0 },
-          { yPercent: -20, xPercent: 100, rotate: 8, duration: 1.5, ease: 'power1.in' },
-          '<-0.3'
-        );
-
-      // 3. Gate Slide Airplane ScrollTrigger Animation
-      const gateSlide = root.querySelector<HTMLElement>('[data-gate-slide]');
-      const gatePlane = root.querySelector<HTMLElement>('[data-gate-plane]');
-      const gateClouds = root.querySelectorAll<HTMLElement>('[data-gate-cloud]');
-
-      if (gateSlide && gatePlane) {
-        gsap.fromTo(
-          gatePlane,
+          { yPercent: 0, xPercent: 0, rotate: 0, scale: 1 },
           {
-            xPercent: -40,
-            yPercent: -35,
-            rotate: -6,
-            scale: 1.15,
-            autoAlpha: 0.25
+            yPercent: 45,
+            xPercent: 65,
+            rotate: 7,
+            scale: 1.2,
+            duration: 1.5,
+            ease: 'power1.inOut'
           },
-          {
-            xPercent: 15,
-            yPercent: 0,
-            rotate: 2,
-            scale: 0.85,
-            autoAlpha: 1,
-            ease: 'power1.out',
-            scrollTrigger: {
-              trigger: gateSlide,
-              start: 'top 85%',
-              end: 'center 45%',
-              scrub: 0.8,
-              invalidateOnRefresh: true
-            }
-          }
+          '<-0.2'
         );
 
-        if (gateClouds.length > 0) {
+      // 3. Gate Landing Section: Real-life Transition to Airplane Landed Inside Gate / Hangar Stand
+      if (gateLandingSection) {
+        const landingImage = gateLandingSection.querySelector<HTMLElement>('.gate-landing-image');
+        const landingBadge = gateLandingSection.querySelector<HTMLElement>('.gate-landing-badge');
+        const landingTitle = gateLandingSection.querySelector<HTMLElement>('.gate-landing-title');
+        const landingDesc = gateLandingSection.querySelector<HTMLElement>('.gate-landing-desc');
+        const landingCta = gateLandingSection.querySelector<HTMLElement>('.gate-landing-cta');
+        const telemetryChips = gateLandingSection.querySelectorAll<HTMLElement>('.telemetry-chip');
+
+        // Cinematic zoom-in as aircraft completes roll-in and comes to rest at stand
+        if (landingImage) {
           gsap.fromTo(
-            gateClouds,
-            { xPercent: 12, autoAlpha: 0.4 },
+            landingImage,
+            { scale: 1.12, yPercent: -4 },
             {
-              xPercent: -12,
-              autoAlpha: 0.85,
-              ease: 'none',
+              scale: 1.0,
+              yPercent: 0,
+              ease: 'power1.out',
               scrollTrigger: {
-                trigger: gateSlide,
+                trigger: gateLandingSection,
                 start: 'top bottom',
                 end: 'bottom top',
-                scrub: 1
+                scrub: 0.8
+              }
+            }
+          );
+        }
+
+        // Elegant staggered entrance of the gate landing title & operational controls
+        const elementsToReveal = [landingBadge, landingTitle, landingDesc, landingCta].filter(Boolean);
+        if (elementsToReveal.length > 0) {
+          gsap.fromTo(
+            elementsToReveal,
+            { autoAlpha: 0, y: 35 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.8,
+              stagger: 0.15,
+              ease: 'power2.out',
+              scrollTrigger: {
+                trigger: gateLandingSection,
+                start: 'top 75%',
+                once: true
+              }
+            }
+          );
+        }
+
+        if (telemetryChips.length > 0) {
+          gsap.fromTo(
+            telemetryChips,
+            { autoAlpha: 0, scale: 0.9 },
+            {
+              autoAlpha: 1,
+              scale: 1,
+              duration: 0.6,
+              stagger: 0.12,
+              ease: 'back.out(1.5)',
+              scrollTrigger: {
+                trigger: gateLandingSection,
+                start: 'top 65%',
+                once: true
               }
             }
           );
         }
       }
 
-      // 4. Section Scroll Reveals
+      // 4. Stand Matrix Section Scroll Reveals
       gsap.utils.toArray<HTMLElement>('[data-scroll-reveal]', root).forEach((el) => {
         gsap.fromTo(
           el,
@@ -236,7 +279,7 @@ export const LandingPage: React.FC = () => {
         );
       });
 
-      // 5. Staggered Cards Reveal
+      // 5. Staggered Core Pillars Reveal
       gsap.utils.toArray<HTMLElement>('[data-scroll-stagger]', root).forEach((container) => {
         gsap.fromTo(
           Array.from(container.children),
@@ -326,9 +369,15 @@ export const LandingPage: React.FC = () => {
       className="bg-[#F5F5F7] text-[#000000] min-h-screen font-sans selection:bg-[#0D98D1] selection:text-white"
     >
       {/* ─────────────────────────────────────────────────────────────
-          GLASSMORPHISM HEADER — Logo + Operations Console Only
+          HEADER — Transparent Glassmorphism (AGAMS Logo + Console Only)
       ───────────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-50 flex h-[79px] items-center justify-between px-6 sm:px-10 md:px-16 border-b border-white/20 bg-white/40 backdrop-blur-xl backdrop-saturate-150 shadow-sm">
+      <header
+        className={`fixed top-0 inset-x-0 z-50 flex h-[79px] items-center justify-between px-6 sm:px-10 md:px-16 transition-all duration-300 ${
+          isScrolled
+            ? 'bg-white/25 backdrop-blur-2xl backdrop-saturate-200 border-b border-slate-900/10 shadow-xs'
+            : 'bg-white/[0.06] backdrop-blur-md backdrop-saturate-150 border-b border-white/20'
+        }`}
+      >
         {/* AGAMS Brandmark */}
         <a
           href="/"
@@ -354,7 +403,7 @@ export const LandingPage: React.FC = () => {
               />
             </svg>
           </div>
-          <div className="flex flex-col border-l border-black/10 pl-3.5 leading-none">
+          <div className="flex flex-col border-l border-black/15 pl-3.5 leading-none">
             <span className="text-xl font-bold tracking-tight text-slate-900 font-display">
               AGAMS
             </span>
@@ -364,7 +413,7 @@ export const LandingPage: React.FC = () => {
           </div>
         </a>
 
-        {/* Single CTA — Operations Console */}
+        {/* Single Right Action — Operations Console */}
         <button
           onClick={() => navigate('/dashboard')}
           className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm sm:text-base font-bold transition-all bg-[#0D98D1] text-white hover:bg-[#0B84B7] px-5 sm:px-6 py-2.5 shadow-sm hover:shadow"
@@ -375,11 +424,11 @@ export const LandingPage: React.FC = () => {
       </header>
 
       {/* ─────────────────────────────────────────────────────────────
-          SECTION B: PINNED HERO — GSAP Airplane Entry + ScrollTrigger
+          SECTION B: PINNED HERO — Cruising Flight to Descent Approach
       ───────────────────────────────────────────────────────────── */}
       <section
         ref={heroSectionRef}
-        className="relative isolate min-h-[calc(100svh-79px)] w-full overflow-hidden bg-gradient-to-b from-[rgba(7,152,209,0.35)] via-[rgba(13,152,209,0.18)] to-white text-black"
+        className="relative isolate min-h-screen w-full overflow-hidden bg-gradient-to-b from-[rgba(7,152,209,0.38)] via-[rgba(13,152,209,0.18)] to-white text-black pt-[79px]"
       >
         {/* Background Drift Clouds Layer */}
         <div className="clouds-container pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[65%] overflow-hidden opacity-90 select-none">
@@ -414,7 +463,7 @@ export const LandingPage: React.FC = () => {
         </div>
 
         {/* Airplane Cruising Element */}
-        <div className="plane-element pointer-events-none absolute top-[38%] left-0 z-[4] w-full will-change-[transform,opacity] md:top-1/4 md:left-1/3 md:w-[68%] max-w-[1150px] select-none">
+        <div className="plane-element pointer-events-none absolute top-[36%] left-0 z-[4] w-full will-change-[transform,opacity] md:top-1/4 md:left-1/3 md:w-[68%] max-w-[1150px] select-none">
           <video
             autoPlay
             loop
@@ -429,8 +478,8 @@ export const LandingPage: React.FC = () => {
         </div>
 
         {/* HERO INTRO CONTENT */}
-        <div className="intro-content absolute top-0 left-0 z-[5] h-full max-w-2xl px-6 pt-[8vmin] sm:px-12 md:w-[58%] xl:px-16">
-          <div className="relative w-full md:top-1/3 md:left-0 md:-translate-y-1/2 space-y-6">
+        <div className="intro-content absolute top-[79px] left-0 z-[5] h-[calc(100%-79px)] max-w-2xl px-6 pt-[8vmin] sm:px-12 md:w-[58%] xl:px-16 flex items-center">
+          <div className="space-y-6">
             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-700">
               <span className="h-px w-8 bg-[#0D98D1]" />
               <span>Next‑Gen Gate Management Platform</span>
@@ -450,12 +499,12 @@ export const LandingPage: React.FC = () => {
             <div className="pt-2 flex flex-wrap gap-4">
               <button
                 onClick={() => {
-                  const el = document.getElementById('gate-workspace');
+                  const el = gateLandingRef.current;
                   el?.scrollIntoView({ behavior: 'smooth' });
                 }}
                 className="inline-flex items-center justify-center gap-2 rounded-full text-lg font-bold bg-[#0D98D1] text-white hover:bg-[#0B84B7] px-8 py-3.5 transition-all shadow-sm hover:shadow"
               >
-                <span>Explore the Live Board</span>
+                <span>Follow Gate Landing</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
             </div>
@@ -464,38 +513,94 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          SECTION C: INTERACTIVE GATE ALLOCATION SLIDE
+          SECTION C: TRANSITION FRAME — Aircraft Docked Inside Gate Stand
+          Recreated real-life transition with AGAMS operational theme
+      ───────────────────────────────────────────────────────────── */}
+      <section
+        ref={gateLandingRef}
+        className="relative isolate min-h-screen w-full overflow-hidden flex items-center bg-[#F5F5F7] border-t border-black/10"
+      >
+        {/* Full-width Gate / Hangar Stand Backdrop Plate */}
+        <div className="absolute inset-0 z-0 overflow-hidden select-none pointer-events-none">
+          <img
+            src="/gate-landing-frame.jpg"
+            alt="Aircraft docked inside terminal gate stand and maintenance bay"
+            className="gate-landing-image w-full h-full object-cover object-center filter brightness-[0.98]"
+          />
+          {/* Subtle directional vignette for text contrast on the left side */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/70 to-transparent z-[1] w-full md:w-[65%]" />
+        </div>
+
+        {/* Content Overlay matching the composition of the reference frame */}
+        <div className="relative z-10 max-w-3xl px-6 sm:px-12 md:px-16 lg:px-20 py-24 space-y-6">
+          {/* Delivering Certainty Equivalent -> Invariant Stand Dispatch */}
+          <div className="gate-landing-badge inline-flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.18em] text-[#0D98D1]">
+            <svg viewBox="0 0 11 11" fill="currentColor" className="w-3.5 h-3.5 text-[#0D98D1]">
+              <path d="M.715.5h10v10H5.488V5.753H.715V.5Z" />
+            </svg>
+            <span className="text-slate-900 font-extrabold tracking-widest">
+              TERMINAL OPERATIONS // STAND DISPATCH
+            </span>
+          </div>
+
+          {/* Heading matching Materials & Logistics Management layout */}
+          <h2 className="gate-landing-title text-[clamp(2.5rem,5vw,4.5rem)] font-bold leading-[1.04] tracking-[-1.5px] text-slate-950 font-display">
+            Terminal Stand &amp; Gate Management
+          </h2>
+
+          {/* Subtitle description */}
+          <p className="gate-landing-desc max-w-xl text-lg sm:text-xl font-medium leading-relaxed text-slate-800">
+            Real‑time conflict‑free stand allocations, automated jet bridge alignment verification, and deterministic apron turnaround orchestration.
+          </p>
+
+          {/* High-visibility Pill Button */}
+          <div className="gate-landing-cta pt-3 flex flex-wrap items-center gap-4">
+            <button
+              onClick={() => {
+                const el = document.getElementById('gate-workspace');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="inline-flex items-center justify-center gap-2.5 rounded-full text-base sm:text-lg font-bold bg-[#0D98D1] text-white hover:bg-[#0B84B7] px-8 py-3.5 transition-all shadow-md hover:shadow-lg"
+            >
+              <span>Explore Stand Matrix</span>
+              <ArrowRight className="w-5 h-5" />
+            </button>
+
+            <button
+              onClick={() => navigate('/allocations')}
+              className="inline-flex items-center justify-center gap-2 rounded-full text-base sm:text-lg font-bold bg-white/80 hover:bg-white text-slate-900 border border-black/15 px-7 py-3.5 transition-all shadow-xs"
+            >
+              <span>Allocation Console</span>
+            </button>
+          </div>
+
+          {/* Live Operational Badges on the Frame */}
+          <div className="pt-6 flex flex-wrap items-center gap-3 font-mono text-xs">
+            <div className="telemetry-chip inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-black/10 shadow-xs text-slate-800 font-bold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Stand G14 // Active Dock</span>
+            </div>
+
+            <div className="telemetry-chip inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-black/10 shadow-xs text-slate-800 font-bold">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Zero-Overlap Invariant Active</span>
+            </div>
+
+            <div className="telemetry-chip inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-black/10 shadow-xs text-slate-700 font-semibold">
+              <span>Centerline Alignment 100%</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION D: INTERACTIVE GATE ALLOCATION WORKSPACE
       ───────────────────────────────────────────────────────────── */}
       <section
         id="gate-workspace"
         data-gate-slide
         className="relative isolate w-full bg-[#F5F5F7] py-20 px-6 sm:px-12 md:px-16 border-t border-black/10 overflow-hidden"
       >
-        {/* Airplane ScrollTrigger parallax */}
-        <div
-          data-gate-plane
-          className="pointer-events-none absolute right-[-5%] top-[6%] z-0 w-[55vw] max-w-[850px] select-none opacity-80 will-change-transform"
-        >
-          <img
-            src="/plane-poster.png"
-            alt="Aircraft approaching stand alignment"
-            className="w-full h-auto object-contain filter drop-shadow-xl"
-          />
-        </div>
-
-        {/* Drift Cloud Backdrop */}
-        <div
-          data-gate-cloud
-          className="pointer-events-none absolute -left-20 top-12 z-0 w-96 h-48 opacity-30 select-none overflow-hidden"
-        >
-          <img
-            src="/clouds-bg.webp"
-            alt=""
-            aria-hidden="true"
-            className="w-full h-full object-cover"
-          />
-        </div>
-
         <div className="relative z-10 max-w-7xl mx-auto space-y-10">
           {/* Section Header */}
           <div data-scroll-reveal className="space-y-4 max-w-3xl">
@@ -721,7 +826,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          SECTION D: THREE CORE CAPABILITIES
+          SECTION E: THREE CORE CAPABILITIES
       ───────────────────────────────────────────────────────────── */}
       <section className="py-24 px-6 sm:px-12 md:px-16 max-w-7xl mx-auto">
         {/* Section Header */}
@@ -870,7 +975,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          FOOTER — Clean AGAMS Footer
+          SECTION F: FOOTER — Clean AGAMS Operations Footer
       ───────────────────────────────────────────────────────────── */}
       <footer data-footer-reveal className="relative overflow-hidden border-t border-black/10 bg-white px-6 sm:px-12 md:px-16 pt-[clamp(2.5rem,5vw,5rem)] pb-12">
         <div className="max-w-7xl mx-auto space-y-16">

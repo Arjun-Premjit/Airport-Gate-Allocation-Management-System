@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, X, Trash2, Edit2, Search } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { Plus, X, Trash2, Edit2, Search, Zap, CheckCircle2 } from 'lucide-react';
 import api from '../services/api';
 import { GateAllocation, Flight, Gate } from '../types';
 import { useAuth } from '../context/AuthContext';
@@ -11,8 +12,12 @@ import { FormField, Input, Select } from '../components/ui/FormField';
 
 export const AllocationsPage: React.FC = () => {
   const { user } = useAuth();
+  const userRole = user?.role || 'Airport Head';
+  const [searchParams] = useSearchParams();
+
   const [allocations, setAllocations] = useState<GateAllocation[]>([]);
   const [flights, setFlights] = useState<Flight[]>([]);
+  const [allGates, setAllGates] = useState<Gate[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -20,11 +25,12 @@ export const AllocationsPage: React.FC = () => {
   // Creation Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFlightId, setSelectedFlightId] = useState('');
-  const [assignedTime, setAssignedTime] = useState('2026-10-12T14:00');
-  const [releasedTime, setReleasedTime] = useState('2026-10-12T16:00');
+  const [assignedTime, setAssignedTime] = useState('2026-10-21T15:00');
+  const [releasedTime, setReleasedTime] = useState('2026-10-21T17:00');
   const [selectedGateId, setSelectedGateId] = useState('');
   const [availableGates, setAvailableGates] = useState<Gate[]>([]);
   const [loadingGates, setLoadingGates] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Edit Modal State
   const [editingAlloc, setEditingAlloc] = useState<GateAllocation | null>(null);
@@ -36,6 +42,13 @@ export const AllocationsPage: React.FC = () => {
   // Feedback State
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  // Auto-open modal if ?new=true query parameter is present
+  useEffect(() => {
+    if (searchParams.get('new') === 'true') {
+      setIsModalOpen(true);
+    }
+  }, [searchParams]);
 
   const fetchAllocations = async () => {
     try {
@@ -53,52 +66,105 @@ export const AllocationsPage: React.FC = () => {
     fetchAllocations();
   }, [statusFilter]);
 
+  // Load all gates as standalone inventory
+  const fetchAllGates = async () => {
+    try {
+      const res = await api.get('/gates');
+      setAllGates(res.data);
+    } catch (err) {
+      console.warn("Failed to load all gates", err);
+    }
+  };
+
   useEffect(() => {
-    const loadFlights = async () => {
-      try {
-        const res = await api.get('/flights');
-        setFlights(res.data);
-      } catch (err) {
-        console.error("Failed to load flights", err);
-      }
-    };
-    loadFlights();
+    fetchAllGates();
   }, []);
 
   const fetchAvailableGates = async (start: string, end: string) => {
     setLoadingGates(true);
     setErrorMessage(null);
     try {
+      const startTimeFormatted = start.length === 16 ? `${start}:00` : start;
+      const endTimeFormatted = end.length === 16 ? `${end}:00` : end;
       const res = await api.get('/gates/available', {
         params: {
-          start_time: `${start}:00`,
-          end_time: `${end}:00`
+          start_time: startTimeFormatted,
+          end_time: endTimeFormatted
         }
       });
       setAvailableGates(res.data);
       if (res.data.length > 0) {
         setSelectedGateId(res.data[0].gate_id);
       } else {
-        setSelectedGateId('');
+        // Fallback: pick the first available non-maintenance gate from allGates
+        const nonMaint = allGates.filter(g => g.status !== 'Maintenance' && g.status !== 'Closed');
+        if (nonMaint.length > 0 && !selectedGateId) {
+          setSelectedGateId(nonMaint[0].gate_id);
+        }
       }
     } catch (err: any) {
-      setErrorMessage(err.response?.data?.detail || "Failed to query available gates.");
+      console.warn("Could not query available gates:", err);
+      // Fallback to allGates
+      const nonMaint = allGates.filter(g => g.status !== 'Maintenance' && g.status !== 'Closed');
+      if (nonMaint.length > 0 && !selectedGateId) {
+        setSelectedGateId(nonMaint[0].gate_id);
+      }
     } finally {
       setLoadingGates(false);
     }
   };
+
+  useEffect(() => {
+    const loadFlights = async () => {
+      try {
+        const res = await api.get('/flights');
+        setFlights(res.data);
+        if (res.data.length > 0) {
+          const firstFlight = res.data[0];
+          setSelectedFlightId(firstFlight.flight_id);
+          const start = firstFlight.scheduled_departure ? firstFlight.scheduled_departure.substring(0, 16) : '2026-10-21T15:00';
+          const end = firstFlight.scheduled_arrival ? firstFlight.scheduled_arrival.substring(0, 16) : '2026-10-21T17:00';
+          setAssignedTime(start);
+          setReleasedTime(end);
+          fetchAvailableGates(start, end);
+        }
+      } catch (err) {
+        console.error("Failed to load flights", err);
+      }
+    };
+    loadFlights();
+  }, [allGates.length]);
 
   const handleFlightSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const fId = e.target.value;
     setSelectedFlightId(fId);
     const f = flights.find(fl => fl.flight_id === fId);
     if (f) {
-      const start = f.scheduled_departure.substring(0, 16);
-      const end = f.scheduled_arrival.substring(0, 16);
+      const start = f.scheduled_departure ? f.scheduled_departure.substring(0, 16) : assignedTime;
+      const end = f.scheduled_arrival ? f.scheduled_arrival.substring(0, 16) : releasedTime;
       setAssignedTime(start);
       setReleasedTime(end);
       fetchAvailableGates(start, end);
     }
+  };
+
+  // Quick preset helper to populate conflict-free demo turnaround
+  const handleQuickPreset = () => {
+    // Select AI202 on Gate G14 (verified available in seed)
+    const targetFlight = flights.find(f => f.flight_id === 'AI202') || flights[0];
+    if (targetFlight) {
+      setSelectedFlightId(targetFlight.flight_id);
+      const start = targetFlight.scheduled_departure ? targetFlight.scheduled_departure.substring(0, 16) : '2026-10-21T15:00';
+      const end = targetFlight.scheduled_arrival ? targetFlight.scheduled_arrival.substring(0, 16) : '2026-10-21T17:00';
+      setAssignedTime(start);
+      setReleasedTime(end);
+    } else {
+      setAssignedTime('2026-10-21T15:00');
+      setReleasedTime('2026-10-21T17:00');
+    }
+    // Prefer G14 or G05
+    setSelectedGateId('G14');
+    fetchAvailableGates('2026-10-21T15:00', '2026-10-21T17:00');
   };
 
   const handleCreateAllocation = async (e: React.FormEvent) => {
@@ -106,25 +172,41 @@ export const AllocationsPage: React.FC = () => {
     setErrorMessage(null);
     setSuccessMessage(null);
 
-    if (!selectedFlightId || !selectedGateId) {
-      setErrorMessage("Please select both a Flight and a Gate.");
+    if (!selectedFlightId) {
+      setErrorMessage("Please select a target flight schedule.");
       return;
     }
 
+    if (!selectedGateId) {
+      setErrorMessage("Please select an apron gate stand.");
+      return;
+    }
+
+    const startDt = new Date(assignedTime);
+    const endDt = new Date(releasedTime);
+    if (endDt <= startDt) {
+      setErrorMessage("Released time must be strictly after assigned time.");
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
       const payload = {
         flight_id: selectedFlightId,
         gate_id: selectedGateId,
-        assigned_time: `${assignedTime}:00`,
-        released_time: `${releasedTime}:00`
+        assigned_time: assignedTime.length === 16 ? `${assignedTime}:00` : assignedTime,
+        released_time: releasedTime.length === 16 ? `${releasedTime}:00` : releasedTime
       };
       const res = await api.post('/allocations', payload);
-      setSuccessMessage(`Successfully allocated Gate ${res.data.gate_id} to Flight ${res.data.flight_id}`);
+      setSuccessMessage(`Successfully allocated Gate ${res.data.gate_id} to Flight ${res.data.flight_id} (Window: ${res.data.assigned_time} - ${res.data.released_time})`);
       setIsModalOpen(false);
       fetchAllocations();
+      fetchAllGates();
     } catch (err: any) {
-      const detail = err.response?.data?.detail || "Allocation failed. Check for conflict.";
+      const detail = err.response?.data?.detail || "Allocation failed. Check for gate conflict or invalid window.";
       setErrorMessage(detail);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -216,7 +298,7 @@ export const AllocationsPage: React.FC = () => {
             <option value="Cancelled">Cancelled</option>
           </Select>
 
-          {(user?.role === 'Airport Head' || user?.role === 'Gate Manager') && (
+          {(userRole === 'Airport Head' || userRole === 'Gate Manager') && (
             <Button
               variant="apron"
               size="md"
@@ -226,8 +308,8 @@ export const AllocationsPage: React.FC = () => {
                 setSuccessMessage(null);
                 if (flights.length > 0) {
                   setSelectedFlightId(flights[0].flight_id);
-                  const start = flights[0].scheduled_departure.substring(0, 16);
-                  const end = flights[0].scheduled_arrival.substring(0, 16);
+                  const start = flights[0].scheduled_departure ? flights[0].scheduled_departure.substring(0, 16) : '2026-10-21T15:00';
+                  const end = flights[0].scheduled_arrival ? flights[0].scheduled_arrival.substring(0, 16) : '2026-10-21T17:00';
                   setAssignedTime(start);
                   setReleasedTime(end);
                   fetchAvailableGates(start, end);
@@ -311,7 +393,7 @@ export const AllocationsPage: React.FC = () => {
                   </TableCell>
                   <TableCell align="right">
                     <div className="flex items-center justify-end gap-1.5">
-                      {a.status !== 'Cancelled' && a.status !== 'Completed' && (user?.role === 'Airport Head' || user?.role === 'Gate Manager') && (
+                      {a.status !== 'Cancelled' && a.status !== 'Completed' && (userRole === 'Airport Head' || userRole === 'Gate Manager') && (
                         <>
                           <button
                             onClick={() => openEditModal(a)}
@@ -353,7 +435,7 @@ export const AllocationsPage: React.FC = () => {
                   Assign Gate Allocation
                 </h2>
                 <p className="text-[12px] text-aviation-muted mt-0.5">
-                  Conflict-free assignment window validation
+                  Conflict-free assignment window validation (16-Table Schema)
                 </p>
               </div>
               <button
@@ -361,6 +443,21 @@ export const AllocationsPage: React.FC = () => {
                 className="text-aviation-muted hover:text-aviation-navy transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" strokeWidth={1.5} />
+              </button>
+            </div>
+
+            {/* Quick Demo Preset Button */}
+            <div className="bg-slate-50 border border-slate-200 rounded-[4px] p-3 flex items-center justify-between">
+              <div className="text-[12px] text-slate-600">
+                <span className="font-semibold text-slate-800">Quick Test Slot:</span> AI202 • Gate G14 • 15:00 - 17:00
+              </div>
+              <button
+                type="button"
+                onClick={handleQuickPreset}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold bg-[#0D98D1] text-white hover:bg-[#0B84B7] rounded-[3px] shadow-xs cursor-pointer transition-colors"
+              >
+                <Zap className="w-3 h-3" />
+                <span>Populate Slot</span>
               </button>
             </div>
 
@@ -411,26 +508,36 @@ export const AllocationsPage: React.FC = () => {
               </div>
 
               <FormField
-                label="Available Verified Gate Stand"
+                label="Assigned Gate Stand"
                 hint={loadingGates ? "Querying available collision-free gates..." : undefined}
               >
-                {availableGates.length > 0 ? (
-                  <Select
-                    value={selectedGateId}
-                    onChange={(e) => setSelectedGateId(e.target.value)}
-                    required
-                  >
-                    {availableGates.map(g => (
-                      <option key={g.gate_id} value={g.gate_id}>
-                        {g.gate_id} — {g.terminal_name} (Capacity: {g.capacity}, Type: {g.gate_type})
-                      </option>
-                    ))}
-                  </Select>
-                ) : (
-                  <div className="p-3 border border-status-reserved/40 bg-status-reserved/5 text-status-reserved text-[12px] rounded-[2px]">
-                    No available gates for this time window (all gates are occupied, in maintenance, or closed).
-                  </div>
-                )}
+                <Select
+                  value={selectedGateId}
+                  onChange={(e) => setSelectedGateId(e.target.value)}
+                  required
+                >
+                  <option value="">-- Choose Apron Stand --</option>
+                  {availableGates.length > 0 && (
+                    <optgroup label="✓ Verified Collision-Free Stands">
+                      {availableGates.map(g => (
+                        <option key={`avail_${g.gate_id}`} value={g.gate_id}>
+                          ✓ Stand {g.gate_id} — {g.terminal_name} (Capacity: {g.capacity}, Type: {g.gate_type})
+                        </option>
+                      ))}
+                    </optgroup>
+                  )}
+                  {allGates.length > 0 && (
+                    <optgroup label="All Operational Stands">
+                      {allGates
+                        .filter(g => !availableGates.some(ag => ag.gate_id === g.gate_id) && g.status !== 'Maintenance' && g.status !== 'Closed')
+                        .map(g => (
+                          <option key={`all_${g.gate_id}`} value={g.gate_id}>
+                            Stand {g.gate_id} — {g.terminal_name} (Current: {g.status})
+                          </option>
+                        ))}
+                    </optgroup>
+                  )}
+                </Select>
               </FormField>
 
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-aviation-border">
@@ -444,9 +551,9 @@ export const AllocationsPage: React.FC = () => {
                 <Button
                   type="submit"
                   variant="apron"
-                  disabled={!selectedGateId}
+                  disabled={!selectedGateId || isSubmitting}
                 >
-                  Confirm Allocation
+                  {isSubmitting ? "Allocating Stand..." : "Confirm Allocation"}
                 </Button>
               </div>
             </form>
