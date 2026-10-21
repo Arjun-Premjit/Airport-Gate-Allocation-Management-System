@@ -1,6 +1,6 @@
 from datetime import datetime, date
 from sqlalchemy.orm import Session
-from backend.app.models.all_models import (
+from app.models.all_models import (
     Airport, AirportContactNumber, ControlTower, Terminal, Gate,
     MaintenanceRecord, Airline, AirlineContactNumber, Aircraft,
     Passenger, Cargo, Flight, Employee, EmployeePhoneNumber,
