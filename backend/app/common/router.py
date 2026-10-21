@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from backend.app.core.database import get_db
-from backend.app.auth.router import AuthenticatedUser, require_roles
-from backend.app.models.all_models import (
+from app.core.database import get_db
+from app.auth.router import AuthenticatedUser, require_roles
+from app.models.all_models import (
     Airport, AirportContactNumber, ControlTower, Terminal,
     Airline, AirlineContactNumber, Aircraft, Passenger, Cargo,
     Employee, EmployeePhoneNumber
