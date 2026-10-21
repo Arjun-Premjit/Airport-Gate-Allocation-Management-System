@@ -81,6 +81,13 @@ export const AllocationsPage: React.FC = () => {
   }, []);
 
   const fetchAvailableGates = async (start: string, end: string) => {
+    if (!start || !end) return;
+    const startDt = new Date(start);
+    const endDt = new Date(end);
+    if (isNaN(startDt.getTime()) || isNaN(endDt.getTime()) || endDt <= startDt) {
+      return;
+    }
+
     setLoadingGates(true);
     setErrorMessage(null);
     try {
@@ -98,7 +105,7 @@ export const AllocationsPage: React.FC = () => {
       } else {
         // Fallback: pick the first available non-maintenance gate from allGates
         const nonMaint = allGates.filter(g => g.status !== 'Maintenance' && g.status !== 'Closed');
-        if (nonMaint.length > 0 && !selectedGateId) {
+        if (nonMaint.length > 0) {
           setSelectedGateId(nonMaint[0].gate_id);
         }
       }
@@ -106,7 +113,7 @@ export const AllocationsPage: React.FC = () => {
       console.warn("Could not query available gates:", err);
       // Fallback to allGates
       const nonMaint = allGates.filter(g => g.status !== 'Maintenance' && g.status !== 'Closed');
-      if (nonMaint.length > 0 && !selectedGateId) {
+      if (nonMaint.length > 0) {
         setSelectedGateId(nonMaint[0].gate_id);
       }
     } finally {
@@ -148,9 +155,8 @@ export const AllocationsPage: React.FC = () => {
     }
   };
 
-  // Quick preset helper to populate conflict-free demo turnaround
+  // Quick preset helper to populate conflict-free demo turnaround dynamically
   const handleQuickPreset = () => {
-    // Select AI202 on Gate G14 (verified available in seed)
     const targetFlight = flights.find(f => f.flight_id === 'AI202') || flights[0];
     if (targetFlight) {
       setSelectedFlightId(targetFlight.flight_id);
@@ -158,14 +164,14 @@ export const AllocationsPage: React.FC = () => {
       const end = targetFlight.scheduled_arrival ? targetFlight.scheduled_arrival.substring(0, 16) : '2026-10-21T17:00';
       setAssignedTime(start);
       setReleasedTime(end);
+      fetchAvailableGates(start, end);
     } else {
       setAssignedTime('2026-10-21T15:00');
       setReleasedTime('2026-10-21T17:00');
+      fetchAvailableGates('2026-10-21T15:00', '2026-10-21T17:00');
     }
-    // Prefer G14 or G05
-    setSelectedGateId('G14');
-    fetchAvailableGates('2026-10-21T15:00', '2026-10-21T17:00');
   };
+
 
   const handleCreateAllocation = async (e: React.FormEvent) => {
     e.preventDefault();

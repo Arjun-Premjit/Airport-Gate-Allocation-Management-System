@@ -26,6 +26,8 @@ export const FlightsPage: React.FC = () => {
   const [newDeparture, setNewDeparture] = useState('2026-10-21T14:00');
   const [newArrival, setNewArrival] = useState('2026-10-21T16:00');
   const [aircraftList, setAircraftList] = useState<any[]>([]);
+  const [airlines, setAirlines] = useState<any[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Staff Assignment Modal
   const [assignModal, setAssignModal] = useState(false);
@@ -54,20 +56,31 @@ export const FlightsPage: React.FC = () => {
   }, [airlineFilter]);
 
   useEffect(() => {
-    const loadFleet = async () => {
+    const loadFleetAndAirlines = async () => {
       try {
-        const res = await api.get('/aircraft');
-        setAircraftList(res.data);
+        const [acRes, alRes] = await Promise.all([
+          api.get('/aircraft'),
+          api.get('/airlines')
+        ]);
+        setAircraftList(acRes.data);
+        setAirlines(alRes.data);
+        if (acRes.data.length > 0) {
+          setNewAircraftId(acRes.data[0].aircraft_id);
+        }
+        if (alRes.data.length > 0) {
+          setNewAirlineId(alRes.data[0].airline_id);
+        }
       } catch (err) {
-        console.error("Failed to load aircraft fleet", err);
+        console.error("Failed to load fleet and airlines", err);
       }
     };
-    loadFleet();
+    loadFleetAndAirlines();
   }, []);
 
   const handleOpenFlight = async (flightId: string) => {
     try {
       const res = await api.get(`/flights/${flightId}`);
+
       setSelectedFlight(res.data);
     } catch (err) {
       console.error("Failed to load flight detail", err);
@@ -89,6 +102,7 @@ export const FlightsPage: React.FC = () => {
   const handleCreateFlight = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+    setIsSubmitting(true);
     try {
       await api.post('/flights', {
         flight_id: newFlightId.trim().toUpperCase(),
@@ -104,8 +118,11 @@ export const FlightsPage: React.FC = () => {
       fetchFlights();
     } catch (err: any) {
       setErrorMessage(err.response?.data?.detail || "Failed to create flight.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
 
   const handleAssignStaff = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,10 +178,20 @@ export const FlightsPage: React.FC = () => {
             className="w-48"
           >
             <option value="">All Airlines</option>
-            <option value="DAL">Delta Air Lines (DAL)</option>
-            <option value="AIC">Air India (AIC)</option>
-            <option value="UAE">Emirates (UAE)</option>
+            {airlines.map(a => (
+              <option key={a.airline_id} value={a.airline_id}>
+                {a.name} ({a.airline_code || a.airline_id})
+              </option>
+            ))}
+            {airlines.length === 0 && (
+              <>
+                <option value="DAL">Delta Air Lines (DAL)</option>
+                <option value="AIC">Air India (AIC)</option>
+                <option value="UAE">Emirates (UAE)</option>
+              </>
+            )}
           </Select>
+
 
           {(userRole === 'Airport Head' || userRole === 'Flight Manager') && (
             <Button
@@ -496,9 +523,18 @@ export const FlightsPage: React.FC = () => {
                     onChange={(e) => setNewAirlineId(e.target.value)}
                     required
                   >
-                    <option value="DAL">Delta Air Lines (DAL)</option>
-                    <option value="AIC">Air India (AIC)</option>
-                    <option value="UAE">Emirates (UAE)</option>
+                    {airlines.map(a => (
+                      <option key={a.airline_id} value={a.airline_id}>
+                        {a.name} ({a.airline_code || a.airline_id})
+                      </option>
+                    ))}
+                    {airlines.length === 0 && (
+                      <>
+                        <option value="DAL">Delta Air Lines (DAL)</option>
+                        <option value="AIC">Air India (AIC)</option>
+                        <option value="UAE">Emirates (UAE)</option>
+                      </>
+                    )}
                   </Select>
                 </FormField>
 
@@ -547,10 +583,12 @@ export const FlightsPage: React.FC = () => {
                 <Button
                   type="submit"
                   variant="apron"
+                  disabled={isSubmitting || !newFlightId.trim()}
                 >
-                  Create Flight
+                  {isSubmitting ? "Creating Flight..." : "Create Flight"}
                 </Button>
               </div>
+
             </form>
           </div>
         </div>

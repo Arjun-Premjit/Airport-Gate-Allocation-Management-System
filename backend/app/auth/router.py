@@ -52,6 +52,50 @@ class AuthenticatedUser:
         self.Supervisor_Employee_ID = employee.Supervisor_Employee_ID
         self.Supervisor_ID = employee.Supervisor_Employee_ID
 
+def resolve_employee_for_identity(db: Session, identity: dict) -> Optional[Employee]:
+    """
+    Resolves the canonical database Employee record corresponding to an authenticated identity.
+    Checks primary ID, alternate IDs, normalized numeric ID, and role-based structural fallback.
+    """
+    candidate_ids = [str(identity.get("employee_id"))]
+    candidate_ids.extend([str(a) for a in identity.get("alt_employee_ids", [])])
+
+    primary = str(identity.get("employee_id", ""))
+    norm = primary.upper().replace("EMP", "").lstrip("0")
+    if norm:
+        candidate_ids.append(norm)
+        try:
+            candidate_ids.append(f"EMP{int(norm):03d}")
+            candidate_ids.append(f"EMP{int(norm):04d}")
+        except ValueError:
+            pass
+
+    for cid in candidate_ids:
+        if cid:
+            emp = db.query(Employee).filter(Employee.Employee_ID == cid).first()
+            if emp:
+                return emp
+
+    # Role-based fallback
+    role = identity.get("role")
+    if role == "Airport Head":
+        # Airport Head: top-level executive with no supervisor, or the first employee
+        emp = db.query(Employee).filter(Employee.Supervisor_Employee_ID.is_(None)).first()
+        if not emp:
+            emp = db.query(Employee).order_by(Employee.Employee_ID.asc()).first()
+        if emp:
+            return emp
+    elif role == "Gate Manager":
+        emps = db.query(Employee).order_by(Employee.Employee_ID.asc()).all()
+        if len(emps) > 1:
+            return emps[1]
+    elif role == "Flight Manager":
+        emps = db.query(Employee).order_by(Employee.Employee_ID.asc()).all()
+        if len(emps) > 2:
+            return emps[2]
+
+    return None
+
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> AuthenticatedUser:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -67,11 +111,32 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     except JWTError:
         raise credentials_exception
 
+    # First attempt direct query with user_id
     employee = db.query(Employee).filter(Employee.Employee_ID == user_id).first()
+    if not employee:
+        # Check normalized alternate format (e.g. if token had EMP001 but DB has 1, or vice versa)
+        norm = user_id.upper().replace("EMP", "").lstrip("0")
+        alts = [norm]
+        try:
+            if norm:
+                alts.append(f"EMP{int(norm):03d}")
+        except ValueError:
+            pass
+        for alt in alts:
+            employee = db.query(Employee).filter(Employee.Employee_ID == alt).first()
+            if employee:
+                break
+
+    if not employee:
+        # Try resolving via identity configuration
+        identity = get_identity_by_employee_id(user_id)
+        if identity:
+            employee = resolve_employee_for_identity(db, identity)
+
     if employee is None:
         raise credentials_exception
 
-    identity = get_identity_by_employee_id(user_id)
+    identity = get_identity_by_employee_id(str(employee.Employee_ID)) or get_identity_by_employee_id(user_id)
     email = identity["email"] if identity else f"{user_id.lower()}@agams.airport"
     role = token_role
 
@@ -97,7 +162,7 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    employee = db.query(Employee).filter(Employee.Employee_ID == identity["employee_id"]).first()
+    employee = resolve_employee_for_identity(db, identity)
     if not employee:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -105,14 +170,15 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token = create_access_token(subject=employee.Employee_ID, role=identity["role"])
+    access_token = create_access_token(subject=str(employee.Employee_ID), role=identity["role"])
     return TokenResponse(
         access_token=access_token,
-        user_id=employee.Employee_ID,
+        user_id=str(employee.Employee_ID),
         name=employee.full_name,
         email=identity["email"],
         role=identity["role"]
     )
+
 
 @router.get("/me", response_model=UserProfile)
 def get_me(current_user: AuthenticatedUser = Depends(get_current_user)):

@@ -98,18 +98,30 @@ def list_gates(
 
 @router.get("/available", response_model=List[GateSummary])
 def get_available_gates(
-    start_time: datetime = Query(..., description="ISO 8601 start of flight window"),
-    end_time: datetime = Query(..., description="ISO 8601 end of flight window"),
+    start_time: str = Query(..., description="ISO 8601 start of flight window (e.g. 2026-10-21T14:00:00)"),
+    end_time: str = Query(..., description="ISO 8601 end of flight window (e.g. 2026-10-21T16:00:00)"),
     terminal_id: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    if end_time <= start_time:
-        raise HTTPException(status_code=400, detail="end_time must be strictly after start_time")
+    try:
+        clean_start = start_time.replace("Z", "").strip()
+        clean_end = end_time.replace("Z", "").strip()
+        st = datetime.fromisoformat(clean_start)
+        et = datetime.fromisoformat(clean_end)
+    except Exception:
+        raise HTTPException(
+            status_code=400,
+            detail="start_time and end_time must be valid ISO 8601 timestamps (e.g. '2026-10-21T14:00:00')."
+        )
+
+    if et <= st:
+        raise HTTPException(status_code=400, detail="end_time must be strictly after start_time.")
 
     # Invariant: Maintenance and closed gates must not be allocated
     query = db.query(Gate).join(Terminal).filter(
         Gate.Status.notin_(["Maintenance", "Closed"])
     )
+
     if terminal_id:
         query = query.filter(Gate.Terminal_ID == terminal_id)
 

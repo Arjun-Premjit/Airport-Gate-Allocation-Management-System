@@ -25,6 +25,8 @@ export const GatesPage: React.FC = () => {
   const [newTerminalId, setNewTerminalId] = useState('T1');
   const [newGateType, setNewGateType] = useState<'Passenger' | 'Cargo' | 'Hybrid'>('Passenger');
   const [newCapacity, setNewCapacity] = useState(250);
+  const [terminals, setTerminals] = useState<any[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -46,6 +48,21 @@ export const GatesPage: React.FC = () => {
     fetchGates();
   }, [terminalFilter, statusFilter]);
 
+  useEffect(() => {
+    const loadTerminals = async () => {
+      try {
+        const res = await api.get('/terminals');
+        setTerminals(res.data);
+        if (res.data.length > 0) {
+          setNewTerminalId(res.data[0].terminal_id);
+        }
+      } catch (err) {
+        console.warn("Failed to load terminals", err);
+      }
+    };
+    loadTerminals();
+  }, []);
+
   const handleOpenGateDetail = async (gateId: string) => {
     try {
       const res = await api.get(`/gates/${gateId}`);
@@ -58,6 +75,7 @@ export const GatesPage: React.FC = () => {
   const handleCreateGate = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+    setIsSubmitting(true);
     try {
       await api.post('/gates', {
         gate_id: newGateId.trim().toUpperCase(),
@@ -72,8 +90,11 @@ export const GatesPage: React.FC = () => {
       fetchGates();
     } catch (err: any) {
       setErrorMessage(err.response?.data?.detail || "Failed to create gate stand.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
 
   const filteredGates = useMemo(() => {
     if (!searchQuery.trim()) return gates;
@@ -113,9 +134,19 @@ export const GatesPage: React.FC = () => {
             className="w-36"
           >
             <option value="">All Terminals</option>
-            <option value="T1">Terminal 1</option>
-            <option value="T2">Terminal 2</option>
+            {terminals.map(t => (
+              <option key={t.terminal_id} value={t.terminal_id}>
+                {t.name || `Terminal ${t.terminal_id}`}
+              </option>
+            ))}
+            {terminals.length === 0 && (
+              <>
+                <option value="T1">Terminal 1</option>
+                <option value="T2">Terminal 2</option>
+              </>
+            )}
           </Select>
+
 
           <Select
             value={statusFilter}
@@ -353,8 +384,17 @@ export const GatesPage: React.FC = () => {
                   onChange={(e) => setNewTerminalId(e.target.value)}
                   required
                 >
-                  <option value="T1">Terminal 1</option>
-                  <option value="T2">Terminal 2</option>
+                  {terminals.map(t => (
+                    <option key={t.terminal_id} value={t.terminal_id}>
+                      {t.name} ({t.terminal_id})
+                    </option>
+                  ))}
+                  {terminals.length === 0 && (
+                    <>
+                      <option value="T1">Terminal 1</option>
+                      <option value="T2">Terminal 2</option>
+                    </>
+                  )}
                 </Select>
               </FormField>
 
@@ -392,10 +432,12 @@ export const GatesPage: React.FC = () => {
                 <Button
                   type="submit"
                   variant="apron"
+                  disabled={isSubmitting || !newGateId.trim()}
                 >
-                  Create Stand
+                  {isSubmitting ? "Creating Stand..." : "Create Stand"}
                 </Button>
               </div>
+
             </form>
           </div>
         </div>

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
@@ -64,7 +64,8 @@ def schedule_maintenance(
     ).scalar()
     record_num = (max_num or 0) + 1
 
-    maint_date = payload.maintenance_date or datetime.utcnow()
+    maint_date = payload.maintenance_date or datetime.now(timezone.utc)
+
 
     new_record = MaintenanceRecord(
         Gate_ID=payload.gate_id,

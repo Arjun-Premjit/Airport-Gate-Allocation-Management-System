@@ -8,23 +8,23 @@ export const ROLE_ACCOUNTS: Record<UserRole, { email: string; password: string; 
   'Airport Head': {
     email: 'head@agams.airport',
     password: 'password123',
-    name: 'Jonathan Vance (Airport Head)'
+    name: 'Airport Head'
   },
   'Gate Manager': {
     email: 'gate.mgr@agams.airport',
     password: 'password123',
-    name: 'Marcus Alexander (Gate Manager)'
+    name: 'Gate Manager'
   },
   'Flight Manager': {
     email: 'flight.mgr@agams.airport',
     password: 'password123',
-    name: 'Sarah Jenkins (Flight Manager)'
+    name: 'Flight Manager'
   }
 };
 
 const DEFAULT_USER: User = {
-  user_id: 'EMP001',
-  name: 'Jonathan Vance',
+  user_id: '1',
+  name: 'Airport Head',
   email: 'head@agams.airport',
   role: 'Airport Head'
 };
@@ -41,7 +41,6 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Always initialize with active user profile so operations console action buttons are visible
   const [user, setUser] = useState<User>(() => {
     try {
       const stored = localStorage.getItem('agams_user');
@@ -64,6 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // 1. If stored token exists, verify validity
       if (storedToken) {
         try {
+          api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
           const res = await api.get('/auth/me');
           if (!cancelled && res.data) {
             setUser(res.data);
@@ -71,11 +71,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             return;
           }
         } catch (err) {
-          console.warn("Stored token invalid, re-authenticating...", err);
+          console.warn("Stored token invalid or expired, re-authenticating...", err);
+          localStorage.removeItem('agams_token');
+          localStorage.removeItem('agams_user');
+          delete api.defaults.headers.common['Authorization'];
         }
       }
 
-      // 2. If no valid token, auto-authenticate with canonical Airport Head credentials
+      // 2. Auto-authenticate with canonical Airport Head credentials
       try {
         const loginRes = await api.post('/auth/login', {
           email: ROLE_ACCOUNTS['Airport Head'].email,
@@ -84,9 +87,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!cancelled && loginRes.data?.access_token) {
           const { access_token, user_id, name, role, email } = loginRes.data;
           localStorage.setItem('agams_token', access_token);
+          api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
           const authedUser: User = {
-            user_id,
-            name: name || ROLE_ACCOUNTS['Airport Head'].name,
+            user_id: String(user_id),
+            name: name || 'Airport Head',
             email: email || ROLE_ACCOUNTS['Airport Head'].email,
             role: role || 'Airport Head'
           };
@@ -95,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser(authedUser);
         }
       } catch (err) {
-        console.warn("Auto-login failed; continuing with fallback profile", err);
+        console.warn("Auto-login failed:", err);
       }
     };
 
@@ -113,10 +117,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { access_token, user_id, name, role } = res.data;
 
       localStorage.setItem('agams_token', access_token);
+      api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
       setToken(access_token);
       const authedUser: User = {
-        user_id,
-        name,
+        user_id: String(user_id),
+        name: name || role,
         email: res.data.email || email,
         role,
       };
@@ -133,24 +138,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await login(creds.email, creds.password);
     } catch (err) {
-      // If backend login fails, still update local user representation for preview
-      const fallbackUser: User = {
-        user_id: role === 'Gate Manager' ? 'EMP002' : role === 'Flight Manager' ? 'EMP003' : 'EMP001',
-        name: creds.name,
-        email: creds.email,
-        role: role
-      };
-      setUser(fallbackUser);
-      localStorage.setItem('agams_user', JSON.stringify(fallbackUser));
+      console.error("Failed to switch role authentication", err);
     }
   };
 
   const logout = () => {
     localStorage.removeItem('agams_token');
     localStorage.removeItem('agams_user');
+    delete api.defaults.headers.common['Authorization'];
     setToken(null);
     setUser(DEFAULT_USER);
   };
+
 
   return (
     <AuthContext.Provider value={{ user, token, login, switchRole, logout, isLoading }}>

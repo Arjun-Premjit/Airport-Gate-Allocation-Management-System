@@ -22,6 +22,8 @@ export const MaintenancePage: React.FC = () => {
   const [maintenanceDate, setMaintenanceDate] = useState('2026-10-21T08:00');
   const [description, setDescription] = useState('');
   const [cost, setCost] = useState('15000');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const fetchRecords = async () => {
@@ -51,6 +53,9 @@ export const MaintenancePage: React.FC = () => {
 
   const handleCreateMaintenance = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    setIsSubmitting(true);
     try {
       await api.post('/maintenance', {
         gate_id: selectedGateId,
@@ -62,21 +67,25 @@ export const MaintenancePage: React.FC = () => {
       setModalOpen(false);
       setDescription('');
       fetchRecords();
-    } catch (err) {
-      console.error("Failed to schedule maintenance", err);
+    } catch (err: any) {
+      setErrorMessage(err.response?.data?.detail || "Failed to schedule maintenance.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleEndMaintenance = async (gateId: string) => {
     if (!confirm(`End maintenance on Gate ${gateId} and restore status to Available?`)) return;
+    setErrorMessage(null);
     try {
       await api.post(`/maintenance/${gateId}/end`);
       setSuccessMessage(`Maintenance ended on Gate ${gateId}. Stand restored to Available.`);
       fetchRecords();
-    } catch (err) {
-      console.error("Failed to end maintenance", err);
+    } catch (err: any) {
+      setErrorMessage(err.response?.data?.detail || "Failed to end maintenance.");
     }
   };
+
 
   return (
     <div className="space-y-8 max-w-7xl">
@@ -109,6 +118,16 @@ export const MaintenancePage: React.FC = () => {
           </button>
         </div>
       )}
+
+      {errorMessage && (
+        <div className="p-3 border border-status-maintenance/40 bg-status-maintenance/5 text-status-maintenance text-[12px] flex items-center justify-between rounded-[2px]">
+          <span>{errorMessage}</span>
+          <button onClick={() => setErrorMessage(null)} className="text-status-maintenance hover:opacity-75 cursor-pointer">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
 
       {/* Maintenance Table */}
       <Table>
@@ -192,6 +211,13 @@ export const MaintenancePage: React.FC = () => {
                 <X className="w-4 h-4" strokeWidth={1.5} />
               </button>
             </div>
+
+            {errorMessage && (
+              <div className="p-3 border border-status-maintenance/40 bg-status-maintenance/5 text-status-maintenance text-[12px] rounded-[2px]">
+                {errorMessage}
+              </div>
+            )}
+
             <form onSubmit={handleCreateMaintenance} className="space-y-4">
               <FormField label="Target Stand">
                 <Select
@@ -245,10 +271,12 @@ export const MaintenancePage: React.FC = () => {
                 <Button
                   type="submit"
                   variant="apron"
+                  disabled={isSubmitting || !description.trim()}
                 >
-                  Schedule Servicing
+                  {isSubmitting ? "Scheduling Servicing..." : "Schedule Servicing"}
                 </Button>
               </div>
+
             </form>
           </div>
         </div>

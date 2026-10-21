@@ -8,29 +8,8 @@ from app.core.database import Base, get_db
 from app.core.seed_data import init_db_seed
 from app.main import app
 
-# Test database using SQLite
-TEST_DATABASE_URL = "sqlite:///./test_agams.db"
-test_engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
-
-def override_get_db():
-    db = TestingSessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-app.dependency_overrides[get_db] = override_get_db
-
-@pytest.fixture(scope="module", autouse=True)
-def setup_test_db():
-    Base.metadata.drop_all(bind=test_engine)
-    Base.metadata.create_all(bind=test_engine)
-    db = TestingSessionLocal()
-    init_db_seed(db)
-    db.close()
-    yield
-    Base.metadata.drop_all(bind=test_engine)
+from app.main import app
+from fastapi.testclient import TestClient
 
 client = TestClient(app)
 
@@ -38,6 +17,7 @@ def get_auth_token(email: str = "gate.mgr@agams.airport"):
     res = client.post("/api/auth/login", json={"email": email, "password": "password123"})
     assert res.status_code == 200, res.text
     return res.json()["access_token"]
+
 
 def test_health_check():
     res = client.get("/api/health")

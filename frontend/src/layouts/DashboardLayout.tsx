@@ -1,7 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Tag } from '../components/ui/Tag';
 
 export const DashboardLayout: React.FC = () => {
   const { user, switchRole } = useAuth();
@@ -94,14 +93,6 @@ export const DashboardLayout: React.FC = () => {
             </div>
           ))}
         </div>
-
-        {/* User Profile in Sidebar Footer */}
-        <div className="p-4 border-t border-white/10 bg-aviation-dark/50">
-          <div className="min-w-0">
-            <div className="text-[12px] font-medium text-white truncate">{user?.name || 'Jonathan Vance'}</div>
-            <div className="text-[11px] text-slate-400 font-tabular truncate">{user?.email || 'head@agams.airport'}</div>
-          </div>
-        </div>
       </aside>
 
       {/* Main Content Area */}
@@ -118,24 +109,27 @@ export const DashboardLayout: React.FC = () => {
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 bg-aviation-bg px-3 py-1.5 rounded-[4px] border border-aviation-border text-[12px]">
-              <span className="text-aviation-muted font-medium">Role:</span>
+              <span className="text-aviation-muted font-medium">Console:</span>
               <select
-                value={user?.role || 'Airport Head'}
+                value={userRole}
                 onChange={(e) => switchRole(e.target.value as any)}
                 className="bg-transparent font-semibold text-aviation-navy border-none outline-hidden cursor-pointer"
+                aria-label="Operational Role Console"
               >
                 <option value="Airport Head">Airport Head</option>
                 <option value="Gate Manager">Gate Manager</option>
                 <option value="Flight Manager">Flight Manager</option>
               </select>
             </div>
-            <Tag variant="neutral">
-              {user?.role || 'Airport Head'}
-            </Tag>
+            <div className="flex items-center gap-2 text-[11px] font-tabular text-stone">
+              <span className="w-2 h-2 rounded-full bg-status-available animate-pulse"></span>
+              <span className="font-semibold text-ink">LIVE</span>
+            </div>
           </div>
         </header>
+
 
         {/* Dynamic Route Content */}
         <main className="flex-1 overflow-y-auto p-8 bg-aviation-bg">

@@ -13,6 +13,11 @@ export const TimelinePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedTerminal, setSelectedTerminal] = useState('');
   const [dateFilter, setDateFilter] = useState('2026-10-21');
+  const [terminals, setTerminals] = useState<any[]>([]);
+
+  useEffect(() => {
+    api.get('/terminals').then(res => setTerminals(res.data)).catch(console.warn);
+  }, []);
 
   const fetchTimeline = async () => {
     setLoading(true);
@@ -31,6 +36,7 @@ export const TimelinePage: React.FC = () => {
   useEffect(() => {
     fetchTimeline();
   }, [selectedTerminal, dateFilter]);
+
 
   // Timeline hours from 06:00 to 22:00 (16 hours window)
   const startHour = 6;
@@ -83,9 +89,19 @@ export const TimelinePage: React.FC = () => {
             className="w-36"
           >
             <option value="">All Concourse</option>
-            <option value="T1">Terminal 1</option>
-            <option value="T2">Terminal 2</option>
+            {terminals.map(t => (
+              <option key={t.terminal_id} value={t.terminal_id}>
+                {t.name || `Terminal ${t.terminal_id}`}
+              </option>
+            ))}
+            {terminals.length === 0 && (
+              <>
+                <option value="T1">Terminal 1</option>
+                <option value="T2">Terminal 2</option>
+              </>
+            )}
           </Select>
+
 
           <Button
             variant="secondary"
