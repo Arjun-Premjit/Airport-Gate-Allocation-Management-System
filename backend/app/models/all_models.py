@@ -4,7 +4,7 @@ from sqlalchemy import (
     ForeignKey, Text, CheckConstraint, UniqueConstraint
 )
 from sqlalchemy.orm import relationship
-from backend.app.core.database import Base
+from app.core.database import Base
 
 # ============================================================================
 # AGAMS — CANONICAL 16-TABLE RELATIONAL MODELS (LOCKED SCHEMA)
