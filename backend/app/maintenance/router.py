@@ -5,9 +5,9 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
-from backend.app.core.database import get_db
-from backend.app.auth.router import AuthenticatedUser, require_roles
-from backend.app.models.all_models import MaintenanceRecord, Gate
+from app.core.database import get_db
+from app.auth.router import AuthenticatedUser, require_roles
+from app.models.all_models import MaintenanceRecord, Gate
 
 router = APIRouter(prefix="/maintenance", tags=["Maintenance"])
 
