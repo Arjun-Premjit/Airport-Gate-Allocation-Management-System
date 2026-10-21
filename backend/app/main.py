@@ -1,3 +1,10 @@
+import sys
+from pathlib import Path
+
+# Keep repository-root imports (backend.app.*) working when Vercel runs this
+# service from the backend/ directory.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
