@@ -52,7 +52,7 @@ export const AirlinesPage: React.FC = () => {
       <PageHeader
         title="Airlines Directory"
         serifAccent="Carriers"
-        subtitle="Commercial and cargo carriers operating scheduled gate turns through JFK."
+        subtitle="Commercial and cargo carriers operating scheduled gate turns through Dubai International Airport (DXB)."
         kicker="Operating Carriers"
       />
 

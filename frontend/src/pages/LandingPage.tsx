@@ -474,7 +474,7 @@ export const LandingPage: React.FC = () => {
                     }}
                     className="w-full text-left px-6 py-2.5 text-sm font-semibold hover:bg-black/5 text-slate-800"
                   >
-                    JFK Station Control
+                    DXB Station Control
                   </button>
                   <button
                     onClick={() => {
@@ -716,16 +716,16 @@ export const LandingPage: React.FC = () => {
             </h2>
 
             <p className="text-base sm:text-lg text-slate-600 font-medium leading-relaxed">
-              JFK International Terminal 2 Concourse G live stand matrix. Mechanical conflict avoidance, wingspan suitability enforcement, and locked servicing isolation.
+              Dubai International Terminal 2 Concourse G live stand matrix. Mechanical conflict avoidance, wingspan suitability enforcement, and locked servicing isolation.
             </p>
           </div>
 
           {/* Interactive Gate Workspace Card */}
-          <div className="border border-black/10 bg-white p-8 sm:p-10 shadow-xl space-y-8 rounded-none">
+          <div data-scroll-reveal className="border border-black/10 bg-white p-8 sm:p-10 shadow-xl space-y-8 rounded-none">
             {/* Header Telemetry Bar & Invariant Indicators */}
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-black/10 pb-5">
               <div className="flex items-center gap-3 font-mono text-sm">
-                <span className="font-bold text-slate-900">STATION: JFK INTERNATIONAL</span>
+                <span className="font-bold text-slate-900">STATION: DUBAI INTERNATIONAL (DXB)</span>
                 <span className="text-slate-300">|</span>
                 <span className="text-slate-600 font-medium">TERMINAL 2 • CONCOURSE G</span>
               </div>
@@ -955,7 +955,7 @@ export const LandingPage: React.FC = () => {
       {/* ─────────────────────────────────────────────────────────────
           SECTION E: GLOBAL HUB MANAGEMENT VIA THREE CORE PILLARS
       ───────────────────────────────────────────────────────────── */}
-      <section id="divisions" className="py-24 px-6 sm:px-12 md:px-16 max-w-7xl mx-auto">
+      <section id="capabilities" className="py-24 px-6 sm:px-12 md:px-16 max-w-7xl mx-auto">
         {/* Section Header */}
         <div data-scroll-reveal className="mb-14 space-y-4">
           <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[#0D98D1]">
@@ -1009,22 +1009,12 @@ export const LandingPage: React.FC = () => {
                 <span>STAND // ENGINE</span>
               </div>
 
-              {/* Exact 3D Wireframe Polygon SVG */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 333 376"
-                className="w-20 h-auto self-end stroke-[#0D98D1] fill-white group-hover:fill-[#0D98D1]/10 transition-colors"
-              >
-                <path
-                  d="M63.282 92.758a.546.546 0 0 1-.504-.11L2.896 43.992c-.399-.304-.956-.028-.956.496v150.351V43.743c0-.303.212-.55.504-.606l267.348-41.24c.159 0 .319 0 .451.11l60.626 49.262c.133.11.239.304.239.497v299.627c0 .304-.212.579-.531.607l-137.496 21.998c-.345.056 0-5.155 0-5.513l-1.142-140.51a.58.58 0 0 0-.663-.579L63.707 247.107a.608.608 0 0 1-.69-.607V93.364c0-.303.212-.55.504-.606L331.108 51.49"
-                  strokeWidth="2"
-                  strokeMiterlimit="10"
-                />
-                <path
-                  d="M193.264 227.117v146.626l-63.705-49.621v-87.718l63.705-9.287Z"
-                  strokeWidth="2"
-                  strokeMiterlimit="10"
-                />
+              {/* Stand Gate Terminal Schematic SVG */}
+              <svg viewBox="0 0 100 100" fill="none" className="w-16 h-16 stroke-[#0D98D1] transition-transform group-hover:scale-105">
+                <rect x="20" y="20" width="60" height="60" rx="4" strokeWidth="2" strokeDasharray="4 2" />
+                <path d="M50 10v20M50 70v20M10 50h20M70 50h20" strokeWidth="2" />
+                <circle cx="50" cy="50" r="14" strokeWidth="2" className="fill-[#0D98D1]/10" />
+                <path d="M44 50h12M50 44v12" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </div>
           </div>
@@ -1062,22 +1052,12 @@ export const LandingPage: React.FC = () => {
                 <span>APRON // TELEMETRY</span>
               </div>
 
-              {/* Exact 3D Wireframe Polygon SVG */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 333 376"
-                className="w-20 h-auto self-end stroke-[#913B31] fill-white group-hover:fill-[#F4EBEA] transition-colors"
-              >
-                <path
-                  d="M63.282 92.758a.546.546 0 0 1-.504-.11L2.896 43.992c-.399-.304-.956-.028-.956.496v150.351V43.743c0-.303.212-.55.504-.606l267.348-41.24c.159 0 .319 0 .451.11l60.626 49.262c.133.11.239.304.239.497v299.627c0 .304-.212.579-.531.607l-137.496 21.998c-.345.056 0-5.155 0-5.513l-1.142-140.51a.58.58 0 0 0-.663-.579L63.707 247.107a.608.608 0 0 1-.69-.607V93.364c0-.303.212-.55.504-.606L331.108 51.49"
-                  strokeWidth="2"
-                  strokeMiterlimit="10"
-                />
-                <path
-                  d="M193.264 227.117v146.626l-63.705-49.621v-87.718l63.705-9.287Z"
-                  strokeWidth="2"
-                  strokeMiterlimit="10"
-                />
+              {/* Apron Jet Bridge Telemetry SVG */}
+              <svg viewBox="0 0 100 100" fill="none" className="w-16 h-16 stroke-[#913B31] transition-transform group-hover:scale-105">
+                <path d="M15 80h70M25 80V35l25-15 25 15v45" strokeWidth="2" />
+                <path d="M40 50h20v30H40z" strokeWidth="2" className="fill-[#913B31]/10" />
+                <circle cx="50" cy="20" r="5" strokeWidth="2" />
+                <path d="M20 65h60" strokeWidth="1.5" strokeDasharray="3 3" />
               </svg>
             </div>
           </div>
@@ -1115,22 +1095,12 @@ export const LandingPage: React.FC = () => {
                 <span>DISPATCH // CONTROL</span>
               </div>
 
-              {/* Exact 3D Wireframe Polygon SVG */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 333 376"
-                className="w-20 h-auto self-end stroke-[#927438] fill-white group-hover:fill-[#F4F1EB] transition-colors"
-              >
-                <path
-                  d="M63.282 92.758a.546.546 0 0 1-.504-.11L2.896 43.992c-.399-.304-.956-.028-.956.496v150.351V43.743c0-.303.212-.55.504-.606l267.348-41.24c.159 0 .319 0 .451.11l60.626 49.262c.133.11.239.304.239.497v299.627c0 .304-.212.579-.531.607l-137.496 21.998c-.345.056 0-5.155 0-5.513l-1.142-140.51a.58.58 0 0 0-.663-.579L63.707 247.107a.608.608 0 0 1-.69-.607V93.364c0-.303.212-.55.504-.606L331.108 51.49"
-                  strokeWidth="2"
-                  strokeMiterlimit="10"
-                />
-                <path
-                  d="M193.264 227.117v146.626l-63.705-49.621v-87.718l63.705-9.287Z"
-                  strokeWidth="2"
-                  strokeMiterlimit="10"
-                />
+              {/* Dispatch Radar Sweep SVG */}
+              <svg viewBox="0 0 100 100" fill="none" className="w-16 h-16 stroke-[#927438] transition-transform group-hover:scale-105">
+                <circle cx="50" cy="50" r="38" strokeWidth="2" />
+                <circle cx="50" cy="50" r="24" strokeWidth="1.5" strokeDasharray="4 2" />
+                <circle cx="50" cy="50" r="10" strokeWidth="2" className="fill-[#927438]/10" />
+                <path d="M50 12v76M12 50h76M50 50l26-26" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </div>
           </div>
@@ -1140,7 +1110,7 @@ export const LandingPage: React.FC = () => {
       {/* ─────────────────────────────────────────────────────────────
           SECTION F: HIGH-END REFERENCE FOOTER
       ───────────────────────────────────────────────────────────── */}
-      <footer className="relative overflow-hidden border-t border-black/10 bg-white px-6 sm:px-12 md:px-16 pt-[clamp(2.5rem,5vw,5rem)] pb-12">
+      <footer data-scroll-reveal className="relative overflow-hidden border-t border-black/10 bg-white px-6 sm:px-12 md:px-16 pt-[clamp(2.5rem,5vw,5rem)] pb-12">
         <div className="max-w-7xl mx-auto space-y-16">
           {/* Top Grid: Logo + 3 Navigation Columns */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -1283,7 +1253,7 @@ export const LandingPage: React.FC = () => {
                 </li>
                 <li className="flex items-center gap-2.5">
                   <Phone className="w-4 h-4 text-[#0D98D1]" />
-                  <span className="font-mono text-slate-600">JFK Apron Control: Ex. 402</span>
+                  <span className="font-mono text-slate-600">DXB Apron Control: Ex. 402</span>
                 </li>
                 <li className="flex items-center gap-2.5">
                   <Clock className="w-4 h-4 text-[#0D98D1]" />
@@ -1293,63 +1263,17 @@ export const LandingPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Bottom Area: Overlapping 3D SVGs & Metadata Bar */}
-          <div className="pt-6 border-t border-black/10 lg:flex lg:items-end lg:justify-between">
-            {/* 3 Layered Overlapping Isometric Wireframe SVGs that translate on hover */}
-            <div className="relative hidden lg:block max-w-80 w-1/4 -mt-[4%] mr-[10%]">
-              {/* Crimson Wireframe (#913B31) */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 333 376"
-                className="relative z-[1] block h-auto w-full transform fill-white stroke-[#913B31] transition-all hover:-translate-y-4 hover:fill-[#F4EBEA] cursor-pointer"
-              >
-                <path
-                  d="M63.282 92.758a.546.546 0 0 1-.504-.11L2.896 43.992c-.399-.304-.956-.028-.956.496v150.351V43.743c0-.303.212-.55.504-.606l267.348-41.24c.159 0 .319 0 .451.11l60.626 49.262c.133.11.239.304.239.497v299.627c0 .304-.212.579-.531.607l-137.496 21.998c-.345.056 0-5.155 0-5.513l-1.142-140.51a.58.58 0 0 0-.663-.579L63.707 247.107a.608.608 0 0 1-.69-.607V93.364c0-.303.212-.55.504-.606L331.108 51.49"
-                  strokeWidth="2"
-                  strokeMiterlimit="10"
-                />
-                <path
-                  d="M193.264 227.117v146.626l-63.705-49.621v-87.718l63.705-9.287Z"
-                  strokeWidth="2"
-                  strokeMiterlimit="10"
-                />
-              </svg>
-
-              {/* Gold Wireframe (#927438) */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 333 376"
-                className="absolute top-[16%] left-[22%] z-[2] block h-auto w-full transform fill-white stroke-[#927438] transition-all hover:-translate-y-4 hover:fill-[#F4F1EB] cursor-pointer"
-              >
-                <path
-                  d="M63.282 92.758a.546.546 0 0 1-.504-.11L2.896 43.992c-.399-.304-.956-.028-.956.496v150.351V43.743c0-.303.212-.55.504-.606l267.348-41.24c.159 0 .319 0 .451.11l60.626 49.262c.133.11.239.304.239.497v299.627c0 .304-.212.579-.531.607l-137.496 21.998c-.345.056 0-5.155 0-5.513l-1.142-140.51a.58.58 0 0 0-.663-.579L63.707 247.107a.608.608 0 0 1-.69-.607V93.364c0-.303.212-.55.504-.606L331.108 51.49"
-                  strokeWidth="2"
-                  strokeMiterlimit="10"
-                />
-                <path
-                  d="M193.264 227.117v146.626l-63.705-49.621v-87.718l63.705-9.287Z"
-                  strokeWidth="2"
-                  strokeMiterlimit="10"
-                />
-              </svg>
-
-              {/* Cyan Wireframe (#0D98D1) */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 333 376"
-                className="absolute top-[32%] left-[44%] z-[3] block h-auto w-full transform fill-white stroke-[#0D98D1] transition-all hover:-translate-y-4 hover:fill-[#E7F5FA] cursor-pointer"
-              >
-                <path
-                  d="M63.282 92.758a.546.546 0 0 1-.504-.11L2.896 43.992c-.399-.304-.956-.028-.956.496v150.351V43.743c0-.303.212-.55.504-.606l267.348-41.24c.159 0 .319 0 .451.11l60.626 49.262c.133.11.239.304.239.497v299.627c0 .304-.212.579-.531.607l-137.496 21.998c-.345.056 0-5.155 0-5.513l-1.142-140.51a.58.58 0 0 0-.663-.579L63.707 247.107a.608.608 0 0 1-.69-.607V93.364c0-.303.212-.55.504-.606L331.108 51.49"
-                  strokeWidth="2"
-                  strokeMiterlimit="10"
-                />
-                <path
-                  d="M193.264 227.117v146.626l-63.705-49.621v-87.718l63.705-9.287Z"
-                  strokeWidth="2"
-                  strokeMiterlimit="10"
-                />
-              </svg>
+          {/* Bottom Area: Live Operational Telemetry Pill & Metadata Bar */}
+          <div className="pt-6 border-t border-black/10 lg:flex lg:items-center lg:justify-between">
+            {/* AGAMS Operational Status Telemetry Pill */}
+            <div className="hidden lg:flex items-center gap-3 px-4 py-2.5 rounded-full border border-black/10 bg-slate-50 font-mono text-xs shadow-xs">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="text-slate-800 font-bold">DXB T2 Telemetry: 18 Gates Active</span>
+              <span className="text-slate-300">|</span>
+              <span className="text-slate-500">Conflict-Free Invariant Engine</span>
             </div>
 
             {/* Footer Metadata with Divide-X hairlines */}
@@ -1358,7 +1282,7 @@ export const LandingPage: React.FC = () => {
                 <p>© 2026 AGAMS Systems</p>
               </li>
               <li className="px-3">
-                <p>JFK Station Control • Invariant Engine</p>
+                <p>DXB Station Control • Invariant Engine</p>
               </li>
               <li className="px-3">
                 <span className="text-slate-400">Deterministic Ramp Engine</span>

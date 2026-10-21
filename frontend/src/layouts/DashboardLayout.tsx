@@ -1,17 +1,10 @@
 import React from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LogOut } from 'lucide-react';
+import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Tag } from '../components/ui/Tag';
 
 export const DashboardLayout: React.FC = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  const { user } = useAuth();
 
   const userRole = user?.role || 'Airport Head';
 
@@ -104,18 +97,9 @@ export const DashboardLayout: React.FC = () => {
 
         {/* User Profile in Sidebar Footer */}
         <div className="p-4 border-t border-white/10 bg-aviation-dark/50">
-          <div className="flex items-center justify-between gap-2">
-            <div className="min-w-0">
-              <div className="text-[12px] font-medium text-white truncate">{user?.name}</div>
-              <div className="text-[11px] text-slate-400 font-tabular truncate">{user?.email}</div>
-            </div>
-            <button
-              onClick={handleLogout}
-              title="Sign Out"
-              className="p-1.5 text-slate-400 hover:text-aviation-red transition-colors rounded-[3px] hover:bg-white/5 cursor-pointer"
-            >
-              <LogOut className="w-4 h-4" strokeWidth={1.5} />
-            </button>
+          <div className="min-w-0">
+            <div className="text-[12px] font-medium text-white truncate">{user?.name}</div>
+            <div className="text-[11px] text-slate-400 font-tabular truncate">{user?.email}</div>
           </div>
         </div>
       </aside>
@@ -126,7 +110,7 @@ export const DashboardLayout: React.FC = () => {
         <header className="h-16 border-b border-aviation-border bg-white px-8 flex items-center justify-between shrink-0 shadow-xs">
           <div className="flex items-center gap-3 text-[12px]">
             <span className="font-semibold tracking-wide text-aviation-text font-tabular">
-              JFK INTERNATIONAL AIRPORT
+              DUBAI INTERNATIONAL AIRPORT
             </span>
             <span className="text-aviation-border">|</span>
             <span className="text-aviation-muted font-medium">

@@ -12,30 +12,30 @@ def init_db_seed(db: Session):
         return  # Already seeded
 
     # 1. Control Towers (Must be inserted before Airport due to Airport.Tower_ID FK)
-    twr_jfk = ControlTower(Tower_ID="TWR-JFK", Tower_Name="JFK Air Traffic Control Tower", Frequency=118.500, Height=97.50)
+    twr_dxb = ControlTower(Tower_ID="TWR-DXB", Tower_Name="Dubai Air Traffic Control Tower", Frequency=118.750, Height=87.00)
     twr_bom = ControlTower(Tower_ID="TWR-BOM", Tower_Name="Mumbai Air Traffic Control Tower", Frequency=119.100, Height=85.00)
     twr_lhr = ControlTower(Tower_ID="TWR-LHR", Tower_Name="Heathrow Air Traffic Control Tower", Frequency=118.700, Height=87.00)
-    db.add_all([twr_jfk, twr_bom, twr_lhr])
+    db.add_all([twr_dxb, twr_bom, twr_lhr])
     db.flush()
 
     # 2. Airports (Tower_ID points to Control_Tower)
-    jfk = Airport(Airport_ID="JFK", Airport_Name="John F. Kennedy International Airport", Street="JFK Access Road", City="New York", State="New York", Country="United States", Tower_ID="TWR-JFK")
+    dxb = Airport(Airport_ID="DXB", Airport_Name="Dubai International Airport", Street="Airport Road", City="Dubai", State="Dubai", Country="United Arab Emirates", Tower_ID="TWR-DXB")
     bom = Airport(Airport_ID="BOM", Airport_Name="Chhatrapati Shivaji Maharaj International Airport", Street="Sahar Road", City="Mumbai", State="Maharashtra", Country="India", Tower_ID="TWR-BOM")
     lhr = Airport(Airport_ID="LHR", Airport_Name="Heathrow Airport", Street="Longford", City="London", State="Greater London", Country="United Kingdom", Tower_ID="TWR-LHR")
-    db.add_all([jfk, bom, lhr])
+    db.add_all([dxb, bom, lhr])
     db.flush()
 
     # 3. Airport Contacts
     db.add_all([
-        AirportContactNumber(Airport_ID="JFK", Contact_Number="+1-718-244-4444"),
-        AirportContactNumber(Airport_ID="JFK", Contact_Number="+1-718-244-5555"),
+        AirportContactNumber(Airport_ID="DXB", Contact_Number="+971-4-224-5555"),
+        AirportContactNumber(Airport_ID="DXB", Contact_Number="+971-4-216-2525"),
         AirportContactNumber(Airport_ID="BOM", Contact_Number="+91-22-66851010"),
         AirportContactNumber(Airport_ID="LHR", Contact_Number="+44-844-335-1801")
     ])
 
     # 4. Terminals
-    t1 = Terminal(Terminal_ID="T1", Terminal_Name="Terminal 1 - Domestic & Regional", Number_Of_Floors=3, Airport_ID="JFK")
-    t2 = Terminal(Terminal_ID="T2", Terminal_Name="Terminal 2 - International Concourse", Number_Of_Floors=4, Airport_ID="JFK")
+    t1 = Terminal(Terminal_ID="T1", Terminal_Name="Terminal 1 - Domestic & Regional", Number_Of_Floors=3, Airport_ID="DXB")
+    t2 = Terminal(Terminal_ID="T2", Terminal_Name="Terminal 2 - International Concourse", Number_Of_Floors=4, Airport_ID="DXB")
     db.add_all([t1, t2])
     db.flush()
 

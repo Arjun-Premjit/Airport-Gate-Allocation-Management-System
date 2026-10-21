@@ -4,27 +4,27 @@
 
 -- 1. Control Towers
 INSERT INTO Control_Tower (Tower_ID, Tower_Name, Frequency, Height) VALUES
-('TWR-JFK', 'JFK Air Traffic Control Tower', 118.500, 97.50),
+('TWR-DXB', 'Dubai Air Traffic Control Tower', 118.750, 87.00),
 ('TWR-BOM', 'Mumbai Air Traffic Control Tower', 119.100, 85.00),
 ('TWR-LHR', 'Heathrow Air Traffic Control Tower', 118.700, 87.00);
 
 -- 2. Airports (Tower_ID FK to Control_Tower)
 INSERT INTO Airport (Airport_ID, Airport_Name, Street, City, State, Country, Tower_ID) VALUES
-('JFK', 'John F. Kennedy International Airport', 'JFK Access Road', 'New York', 'New York', 'United States', 'TWR-JFK'),
+('DXB', 'Dubai International Airport', 'Airport Road', 'Dubai', 'Dubai', 'United Arab Emirates', 'TWR-DXB'),
 ('BOM', 'Chhatrapati Shivaji Maharaj International Airport', 'Sahar Road', 'Mumbai', 'Maharashtra', 'India', 'TWR-BOM'),
 ('LHR', 'Heathrow Airport', 'Longford', 'London', 'Greater London', 'United Kingdom', 'TWR-LHR');
 
 -- 3. Airport Contacts
 INSERT INTO Airport_Contact_Number (Airport_ID, Contact_Number) VALUES
-('JFK', '+1-718-244-4444'),
-('JFK', '+1-718-244-5555'),
+('DXB', '+971-4-224-5555'),
+('DXB', '+971-4-216-2525'),
 ('BOM', '+91-22-66851010'),
 ('LHR', '+44-844-335-1801');
 
 -- 4. Terminals
 INSERT INTO Terminal (Terminal_ID, Terminal_Name, Number_Of_Floors, Airport_ID) VALUES
-('T1', 'Terminal 1 - Domestic & Regional', 3, 'JFK'),
-('T2', 'Terminal 2 - International Concourse', 4, 'JFK');
+('T1', 'Terminal 1 - Domestic & Regional', 3, 'DXB'),
+('T2', 'Terminal 2 - International Concourse', 4, 'DXB');
 
 -- 5. Gates (G01 to G18)
 INSERT INTO Gate (Gate_ID, Gate_Type, Capacity, Status, Terminal_ID) VALUES
