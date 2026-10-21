@@ -5,9 +5,9 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
-from backend.app.core.database import get_db
-from backend.app.auth.router import AuthenticatedUser, require_roles
-from backend.app.models.all_models import (
+from app.core.database import get_db
+from app.auth.router import AuthenticatedUser, require_roles
+from app.models.all_models import (
     Flight, Airline, Aircraft, Passenger, Cargo, GateAllocation,
     EmployeeFlightAssignedTo, Employee, EmployeePhoneNumber
 )
