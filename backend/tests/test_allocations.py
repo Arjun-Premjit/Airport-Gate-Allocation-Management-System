@@ -4,9 +4,9 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from backend.app.core.database import Base, get_db
-from backend.app.core.seed_data import init_db_seed
-from backend.app.main import app
+from app.core.database import Base, get_db
+from app.core.seed_data import init_db_seed
+from app.main import app
 
 # Test database using SQLite
 TEST_DATABASE_URL = "sqlite:///./test_agams.db"
